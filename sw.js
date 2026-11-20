@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dispensa-pwa-v4';
+const CACHE_NAME = 'dispensa-pwa-v5';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -26,6 +26,10 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // Lascia transitare le richieste Firebase in rete diretta
+  if (event.request.url.includes('firebaseio.com') || event.request.url.includes('googleapis.com')) {
+    return;
+  }
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) return cachedResponse;
