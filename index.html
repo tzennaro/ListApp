@@ -14,6 +14,10 @@
 
   <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3759/3759041.png">
 
+  <!-- Firebase SDK (Compatibilità modulare v9) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
   <style>
     :root {
       --bg-primary: #F2F2F7;
@@ -67,14 +71,13 @@
     }
 
     .header-left, .header-right {
-      width: 44px;
       display: flex;
       align-items: center;
-      justify-content: center;
+      gap: 8px;
     }
 
     header h1 {
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 700;
       letter-spacing: -0.4px;
       text-align: center;
@@ -101,6 +104,7 @@
       align-items: center;
       justify-content: center;
       transition: transform 0.12s ease, background 0.12s ease;
+      position: relative;
     }
 
     .btn-circle-glass:active {
@@ -109,14 +113,26 @@
     }
 
     .btn-circle-glass svg {
-      width: 20px;
-      height: 20px;
+      width: 19px;
+      height: 19px;
       stroke: currentColor;
-      stroke-width: 2.4;
+      stroke-width: 2.3;
       stroke-linecap: round;
       stroke-linejoin: round;
       fill: none;
     }
+
+    .sync-indicator {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #C7C7CC;
+    }
+    .sync-indicator.online { background: var(--tint-green); }
+    .sync-indicator.syncing { background: var(--tint-orange); }
 
     /* Contenitore Principale */
     main {
@@ -187,7 +203,7 @@
       font-weight: 500;
     }
 
-    /* Card "Nuova Categoria" */
+    /* Card Nuova Categoria */
     .tile-card.tile-add-new {
       border: 2px dashed #C7C7CC;
       background: rgba(255, 255, 255, 0.5);
@@ -549,7 +565,7 @@
       text-align: center;
     }
 
-    /* Modali iOS per Gestione Categorie */
+    /* Modali iOS */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -644,13 +660,19 @@
           <polyline points="15 18 9 12 15 6"></polyline>
         </svg>
       </button>
+      <button id="btn-header-sync" class="btn-circle-glass" onclick="openSyncModal()" aria-label="Condivisione Casa">
+        <svg viewBox="0 0 24 24">
+          <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+        </svg>
+        <span class="sync-indicator" id="sync-dot"></span>
+      </button>
     </div>
     <h1 id="header-title">Casa & Scorte</h1>
     <div class="header-right">
       <button id="btn-header-settings" class="btn-circle-glass" style="display: none;" onclick="openCategorySettingsModal()" aria-label="Impostazioni Categoria">
         <svg viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="3"></circle>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83-2.83l.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
         </svg>
       </button>
     </div>
@@ -658,10 +680,10 @@
 
   <!-- Viste Contenuto -->
   <main>
-    <!-- 1. VISTA HOME (Griglia Categorie + Nuova Categoria) -->
+    <!-- 1. VISTA HOME -->
     <div id="view-home" class="view active">
       <div class="tiles-grid" id="tiles-container">
-        <!-- Renderizzato dinamicamente via JS -->
+        <!-- Renderizzato via JS -->
       </div>
     </div>
 
@@ -703,12 +725,30 @@
       </p>
 
       <div id="spesa-items-container" class="item-list">
-        <!-- Elementi con swipe gestures -->
+        <!-- Swipe gestures -->
       </div>
     </div>
   </main>
 
-  <!-- Modal Modifica Categoria Esistente -->
+  <!-- Modal Sincronizzazione Casa (Due Utenti) -->
+  <div class="modal-overlay" id="modal-sync">
+    <div class="modal-box">
+      <div class="modal-title">Condivisione Casa ☁️</div>
+      <p style="font-size: 13px; color: var(--text-muted); text-align: center; line-height: 1.4;">
+        Inserisci lo <strong>stesso Codice Casa</strong> su entrambi gli iPhone per condividere scorte e lista spesa in tempo reale.
+      </p>
+      <div class="modal-field">
+        <span class="modal-label">Codice Casa Condiviso</span>
+        <input type="text" id="input-sync-code" placeholder="es. CASA-ROSSI-2025" style="text-align: center; font-weight: 700; text-transform: uppercase;">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-modal-cancel" onclick="closeSyncModal()">Chiudi</button>
+        <button class="btn-modal btn-modal-save" onclick="saveSyncCode()">Collega</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Modifica Categoria -->
   <div class="modal-overlay" id="modal-category-settings">
     <div class="modal-box">
       <div class="modal-title">Modifica Categoria</div>
@@ -727,7 +767,7 @@
     </div>
   </div>
 
-  <!-- Modal Aggiungi Nuova Categoria -->
+  <!-- Modal Nuova Categoria -->
   <div class="modal-overlay" id="modal-new-category">
     <div class="modal-box">
       <div class="modal-title">Nuova Categoria</div>
@@ -760,6 +800,40 @@
   </nav>
 
   <script>
+    /* ==========================================================
+       1. CONFIGURAZIONE FIREBASE CONDIVISA (Gratuita)
+       Sostituisci questi parametri con quelli del tuo progetto
+       Firebase (vedi capitolo 3 per la procedura rapida).
+    ========================================================== */
+    const firebaseConfig = {
+      apiKey: "AIzaSyDhtvjCZstnA0zAFeNZJHRRvFHxiGznrqk",
+      authDomain: "listapp-a19e7.firebaseapp.com",
+      databaseURL: "https://listapp-a19e7-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "listapp-a19e7",
+      storageBucket: "listapp-a19e7.firebasestorage.app",
+      messagingSenderId: "157156284614",
+      appId: "1:157156284614:web:53538938edb6883d0e9fc7",
+      measurementId: "G-NBRZM1VV4T"
+    };
+
+    let fbDatabase = null;
+    let householdRef = null;
+    let isFirebaseConfigured = false;
+
+    // Inizializza Firebase se configurato
+    if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "INSERISCI_LA_TUA_API_KEY") {
+      try {
+        firebase.initializeApp(firebaseConfig);
+        fbDatabase = firebase.database();
+        isFirebaseConfigured = true;
+      } catch (err) {
+        console.warn("Firebase non inizializzato:", err);
+      }
+    }
+
+    /* ==========================================================
+       2. DATI E STATO APPLICAZIONE
+    ========================================================== */
     const DEFAULT_CATEGORIES = {
       frigo: { title: "Frigorifero", icon: "❄️", color: "var(--tint-blue)" },
       dispensa: { title: "Dispensa", icon: "🥫", color: "var(--tint-orange)" },
@@ -795,9 +869,64 @@
     };
 
     let currentCategory = null;
+    let householdCode = localStorage.getItem("smart_pantry_sync_code") || "";
 
-    function loadData() {
-      const saved = localStorage.getItem("smart_pantry_ios_pwa_v3");
+    function setSyncDot(status) {
+      const dot = document.getElementById("sync-dot");
+      dot.className = "sync-indicator " + status;
+    }
+
+    /* ==========================================================
+       3. GESTIONE SINCRONIZZAZIONE REALTIME
+    ========================================================== */
+    function initSync() {
+      if (!isFirebaseConfigured || !householdCode) {
+        setSyncDot("");
+        loadLocalData();
+        return;
+      }
+
+      const safeKey = householdCode.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '_');
+      householdRef = fbDatabase.ref("households/" + safeKey);
+
+      setSyncDot("syncing");
+
+      // Ascolto in tempo reale: scatta ogni volta che Utente 1 o Utente 2 modificano qualcosa!
+      householdRef.on("value", (snapshot) => {
+        const remoteData = snapshot.val();
+        if (remoteData) {
+          appData = remoteData;
+          // Assicura struttura valida
+          if (!appData.categories) appData.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+          if (!appData.inventory) appData.inventory = {};
+          if (!appData.spesa) appData.spesa = [];
+
+          localStorage.setItem("smart_pantry_ios_pwa_v4", JSON.stringify(appData));
+          refreshCurrentView();
+          setSyncDot("online");
+        } else {
+          // Se la stanza è vuota nel cloud, carica i dati correnti locali
+          syncToCloud();
+          setSyncDot("online");
+        }
+      }, (error) => {
+        console.error("Errore sincronizzazione Firebase:", error);
+        setSyncDot("");
+        loadLocalData();
+      });
+    }
+
+    function syncToCloud() {
+      if (householdRef) {
+        setSyncDot("syncing");
+        householdRef.set(appData)
+          .then(() => setSyncDot("online"))
+          .catch(() => setSyncDot(""));
+      }
+    }
+
+    function loadLocalData() {
+      const saved = localStorage.getItem("smart_pantry_ios_pwa_v4");
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
@@ -805,21 +934,65 @@
             appData = parsed;
           }
         } catch (e) {
-          console.error("Errore lettura dati salvati:", e);
+          console.error(e);
         }
       }
-      renderHomeTiles();
-      updateBadge();
+      refreshCurrentView();
     }
 
-    function saveData() {
-      localStorage.setItem("smart_pantry_ios_pwa_v3", JSON.stringify(appData));
-      renderHomeTiles();
-      updateBadge();
+    function persistData() {
+      localStorage.setItem("smart_pantry_ios_pwa_v4", JSON.stringify(appData));
+      if (householdRef) {
+        syncToCloud();
+      }
+      refreshCurrentView();
     }
 
+    function refreshCurrentView() {
+      renderHomeTiles();
+      updateBadge();
+      if (currentCategory) {
+        renderCategoryItems();
+      } else if (document.getElementById("view-spesa").classList.contains("active")) {
+        renderSpesaItems();
+      }
+    }
+
+    /* Modal Sincronizzazione Casa */
+    function openSyncModal() {
+      document.getElementById("input-sync-code").value = householdCode;
+      document.getElementById("modal-sync").classList.add("active");
+    }
+
+    function closeSyncModal() {
+      document.getElementById("modal-sync").classList.remove("active");
+    }
+
+    function saveSyncCode() {
+      const code = document.getElementById("input-sync-code").value.trim().toUpperCase();
+      householdCode = code;
+      localStorage.setItem("smart_pantry_sync_code", code);
+      closeSyncModal();
+
+      if (householdRef) {
+        householdRef.off();
+        householdRef = null;
+      }
+
+      if (householdCode) {
+        alert(`Collegato alla Casa: "${householdCode}". Inserisci lo stesso codice sull'altro iPhone.`);
+        initSync();
+      } else {
+        alert("Codice rimosso. L'app funzionerà in modalità solo locale.");
+        setSyncDot("");
+      }
+    }
+
+    /* ==========================================================
+       4. LOGICA NAVIGAZIONE ED ELEMENTI
+    ========================================================== */
     function updateBadge() {
-      const pendingSpesa = appData.spesa.filter(item => !item.done).length;
+      const pendingSpesa = (appData.spesa || []).filter(item => !item.done).length;
       const badge = document.getElementById("spesa-badge");
       if (pendingSpesa > 0) {
         badge.textContent = pendingSpesa;
@@ -833,9 +1006,9 @@
       const container = document.getElementById("tiles-container");
       container.innerHTML = "";
 
-      Object.keys(appData.categories).forEach(catKey => {
+      Object.keys(appData.categories || {}).forEach(catKey => {
         const cat = appData.categories[catKey];
-        const items = appData.inventory[catKey] || [];
+        const items = (appData.inventory && appData.inventory[catKey]) || [];
         const count = items.length;
 
         const tile = document.createElement("div");
@@ -855,7 +1028,6 @@
         container.appendChild(tile);
       });
 
-      // Card per aggiungere una nuova categoria
       const addTile = document.createElement("div");
       addTile.className = "tile-card tile-add-new";
       addTile.onclick = openNewCategoryModal;
@@ -884,7 +1056,7 @@
 
     function openCategory(catKey) {
       currentCategory = catKey;
-      const meta = appData.categories[catKey];
+      const meta = appData.categories[catKey] || { title: "Categoria", icon: "📦" };
 
       document.getElementById("view-home").classList.remove("active");
       document.getElementById("view-spesa").classList.remove("active");
@@ -916,7 +1088,7 @@
       }
     }
 
-    /* Modal Gestione Impostazioni Categoria */
+    /* Modal Impostazioni Categoria */
     function openCategorySettingsModal() {
       if (!currentCategory) return;
       const meta = appData.categories[currentCategory];
@@ -942,9 +1114,8 @@
       appData.categories[currentCategory].title = title;
       appData.categories[currentCategory].icon = icon;
 
-      saveData();
+      persistData();
       closeCategorySettingsModal();
-
       document.getElementById("header-title").textContent = `${icon} ${title}`;
     }
 
@@ -962,8 +1133,7 @@
 
     function createNewCategory() {
       const title = document.getElementById("input-new-cat-title").value.trim();
-      let icon = document.getElementById("input-new-cat-icon").value.trim();
-      if (!icon) icon = "📦";
+      let icon = document.getElementById("input-new-cat-icon").value.trim() || "📦";
 
       if (!title) {
         alert("Il nome della categoria è obbligatorio.");
@@ -980,18 +1150,19 @@
         color: randomColor
       };
 
+      if (!appData.inventory) appData.inventory = {};
       appData.inventory[catId] = [];
 
-      saveData();
+      persistData();
       closeNewCategoryModal();
     }
 
-    /* Gestione Articoli Categoria */
+    /* Gestione Articoli Scorte */
     function renderCategoryItems() {
       const container = document.getElementById("category-items-container");
       container.innerHTML = "";
 
-      const items = appData.inventory[currentCategory] || [];
+      const items = (appData.inventory && appData.inventory[currentCategory]) || [];
       if (items.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
@@ -1047,13 +1218,13 @@
         qty: isNaN(qty) ? 1 : Math.max(0, qty)
       };
 
+      if (!appData.inventory) appData.inventory = {};
       if (!appData.inventory[currentCategory]) {
         appData.inventory[currentCategory] = [];
       }
 
       appData.inventory[currentCategory].push(newItem);
-      saveData();
-      renderCategoryItems();
+      persistData();
 
       nameInput.value = "";
       qtyInput.value = 1;
@@ -1064,15 +1235,13 @@
       const item = appData.inventory[currentCategory].find(i => i.id === id);
       if (item) {
         item.qty = Math.max(0, item.qty + delta);
-        saveData();
-        renderCategoryItems();
+        persistData();
       }
     }
 
     function deleteItem(id) {
       appData.inventory[currentCategory] = appData.inventory[currentCategory].filter(i => i.id !== id);
-      saveData();
-      renderCategoryItems();
+      persistData();
     }
 
     /* Gestione Lista Spesa con Swipe to Dismiss */
@@ -1080,7 +1249,8 @@
       const container = document.getElementById("spesa-items-container");
       container.innerHTML = "";
 
-      if (appData.spesa.length === 0) {
+      const spesaList = appData.spesa || [];
+      if (spesaList.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
             La lista della spesa è vuota! 🎉<br>
@@ -1090,7 +1260,7 @@
         return;
       }
 
-      appData.spesa.forEach(item => {
+      spesaList.forEach(item => {
         const catMeta = item.fromCat ? appData.categories[item.fromCat] : null;
         const catBadge = catMeta ? `<span class="category-tag">${catMeta.icon || ''} ${escapeHtml(catMeta.title)}</span>` : '';
 
@@ -1178,8 +1348,7 @@
       const item = appData.spesa.find(s => s.id === id);
       if (item) {
         item.done = !item.done;
-        saveData();
-        renderSpesaItems();
+        persistData();
       }
     }
 
@@ -1188,6 +1357,7 @@
       const name = input.value.trim();
       if (!name) return;
 
+      if (!appData.spesa) appData.spesa = [];
       appData.spesa.push({
         id: "sp_" + Date.now(),
         name: name,
@@ -1197,11 +1367,11 @@
 
       input.value = "";
       input.blur();
-      saveData();
-      renderSpesaItems();
+      persistData();
     }
 
     function addSingleToSpesa(itemName, cat) {
+      if (!appData.spesa) appData.spesa = [];
       const exists = appData.spesa.some(s => s.name.toLowerCase() === itemName.toLowerCase() && !s.done);
       if (!exists) {
         appData.spesa.push({
@@ -1210,7 +1380,7 @@
           done: false,
           fromCat: cat
         });
-        saveData();
+        persistData();
         alert(`"${itemName}" aggiunto alla lista spesa!`);
       } else {
         alert(`"${itemName}" è già presente nella lista spesa.`);
@@ -1219,7 +1389,9 @@
 
     function autoPopulateSpesa() {
       let added = 0;
-      Object.keys(appData.inventory).forEach(cat => {
+      if (!appData.spesa) appData.spesa = [];
+
+      Object.keys(appData.inventory || {}).forEach(cat => {
         appData.inventory[cat].forEach(item => {
           if (item.qty <= 1) {
             const alreadyInSpesa = appData.spesa.some(s => s.name.toLowerCase() === item.name.toLowerCase() && !s.done);
@@ -1236,21 +1408,18 @@
         });
       });
 
-      saveData();
-      renderSpesaItems();
+      persistData();
       alert(added > 0 ? `Aggiunti ${added} articoli in esaurimento!` : "Tutti gli articoli esauriti sono già in lista.");
     }
 
     function clearPurchasedSpesa() {
-      appData.spesa = appData.spesa.filter(s => !s.done);
-      saveData();
-      renderSpesaItems();
+      appData.spesa = (appData.spesa || []).filter(s => !s.done);
+      persistData();
     }
 
     function removeSpesaItem(id) {
-      appData.spesa = appData.spesa.filter(s => s.id !== id);
-      saveData();
-      renderSpesaItems();
+      appData.spesa = (appData.spesa || []).filter(s => s.id !== id);
+      persistData();
     }
 
     function escapeHtml(text) {
@@ -1259,8 +1428,10 @@
       return div.innerHTML;
     }
 
-    loadData();
+    // Inizializzazione Sincronizzazione / Locale
+    initSync();
 
+    // Service Worker PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js')
