@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Dispensa & Casa</title>
+
+  <!-- PWA & Apple WebKit Directives -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Dispensa">
+  <meta name="theme-color" content="#F2F2F7">
+  
+  <!-- Apple Touch Icon per schermata Home -->
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3759/3759041.png">
+
+  <style>
+    :root {
+      --bg-primary: #F2F2F7;
+      --card-bg: #FFFFFF;
+      --text-main: #1C1C1E;
+      --text-muted: #8E8E93;
+      --tint-blue: #007AFF;
+      --tint-red: #FF3B30;
+      --tint-green: #34C759;
+      --tint-orange: #FF9500;
+      --tint-purple: #AF52DE;
+      --border-color: #E5E5EA;
+      --safe-top: env(safe-area-inset-top, 20px);
+      --safe-bottom: env(safe-area-inset-bottom, 20px);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      padding-top: var(--safe-top);
+      padding-bottom: calc(var(--safe-bottom) + 75px);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+      -webkit-user-select: none;
+      overflow-x: hidden;
+    }
+
+    /* Header Navigazione con Blur Trasparente iOS */
+    header {
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: rgba(242, 242, 247, 0.88);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+      z-index: 50;
+    }
+
+    header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .btn-back {
+      background: none;
+      border: none;
+      color: var(--tint-blue);
+      font-size: 17px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 500;
+      padding: 4px 8px 4px 0;
+    }
+
+    /* Contenitore Principale */
+    main {
+      padding: 14px 18px;
+      flex: 1;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+      animation: viewSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes viewSlideIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Griglia 4 Tile (2 x 2) */
+    .tiles-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 6px;
+    }
+
+    .tile-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 160px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+      position: relative;
+    }
+
+    .tile-card:active {
+      transform: scale(0.96);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    }
+
+    .tile-icon {
+      font-size: 40px;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .tile-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-main);
+      letter-spacing: -0.3px;
+    }
+
+    .tile-count {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    /* Dettaglio di Bordo Tematico per Categoria */
+    .tile-frigo { border-top: 4px solid var(--tint-blue); }
+    .tile-dispensa { border-top: 4px solid var(--tint-orange); }
+    .tile-cane { border-top: 4px solid var(--tint-purple); }
+    .tile-ripostiglio { border-top: 4px solid var(--tint-green); }
+
+    /* Sezione Aggiunta Prodotti */
+    .add-form-card {
+      background: var(--card-bg);
+      padding: 16px;
+      border-radius: 18px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    input, select {
+      background: #EFEFF4;
+      border: 1px solid transparent;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 16px;
+      color: var(--text-main);
+      outline: none;
+      -webkit-appearance: none;
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--tint-blue);
+      background: #FFFFFF;
+    }
+
+    .input-name { flex: 3; }
+    .input-qty { width: 85px; text-align: center; }
+
+    .btn-add {
+      background: var(--tint-blue);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-add:active {
+      opacity: 0.85;
+    }
+
+    /* Lista Articoli Scorte */
+    .item-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .item-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    }
+
+    .item-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      flex: 1;
+      margin-right: 12px;
+    }
+
+    .item-name {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      word-break: break-word;
+    }
+
+    .item-status {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .status-ok { color: var(--tint-green); }
+    .status-low { color: var(--tint-orange); }
+    .status-empty { color: var(--tint-red); }
+
+    .item-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .qty-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: #EFEFF4;
+      color: var(--text-main);
+      font-size: 18px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .qty-btn:active {
+      background: #E5E5EA;
+    }
+
+    .qty-value {
+      font-size: 16px;
+      font-weight: 600;
+      min-width: 26px;
+      text-align: center;
+    }
+
+    .btn-quick-spesa {
+      background: none;
+      border: none;
+      font-size: 21px;
+      padding: 6px;
+      cursor: pointer;
+      opacity: 0.85;
+      margin-right: 2px;
+    }
+
+    /* Sezione Lista Spesa */
+    .spesa-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .btn-secondary {
+      flex: 1;
+      padding: 12px 10px;
+      border-radius: 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-align: center;
+    }
+
+    .btn-secondary:active {
+      background: #EFEFF4;
+    }
+
+    .spesa-item {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      transition: opacity 0.2s ease;
+    }
+
+    .spesa-item.checked {
+      opacity: 0.55;
+    }
+
+    .spesa-item.checked span.spesa-text {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .checkbox {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid var(--border-color);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-right: 12px;
+      flex-shrink: 0;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .spesa-item.checked .checkbox {
+      background: var(--tint-green);
+      border-color: var(--tint-green);
+      color: white;
+      font-size: 13px;
+    }
+
+    .category-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: #EFEFF4;
+      color: var(--text-muted);
+      margin-left: 8px;
+    }
+
+    /* Schermata Vuota */
+    .empty-state {
+      text-align: center;
+      padding: 45px 20px;
+      color: var(--text-muted);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    /* Barra di Navigazione Inferiore (iOS Tab Bar) */
+    nav.bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: calc(54px + var(--safe-bottom));
+      padding-bottom: var(--safe-bottom);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border-top: 0.5px solid var(--border-color);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .nav-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      position: relative;
+      flex: 1;
+    }
+
+    .nav-tab.active {
+      color: var(--tint-blue);
+    }
+
+    .nav-tab svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+
+    .badge {
+      position: absolute;
+      top: -2px;
+      right: 28%;
+      background: var(--tint-red);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 1px 5px;
+      min-width: 16px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Dinamico -->
+  <header>
+    <button id="btn-header-back" class="btn-back" style="display: none;" onclick="showHome()">
+      ‹ Scorte
+    </button>
+    <h1 id="header-title">Casa & Scorte</h1>
+    <div style="width: 24px;"></div>
+  </header>
+
+  <!-- Viste Contenuto -->
+  <main>
+    <!-- 1. VISTA HOME (Griglia 4 Tile) -->
+    <div id="view-home" class="view active">
+      <div class="tiles-grid">
+        <div class="tile-card tile-frigo" onclick="openCategory('frigo')">
+          <div class="tile-icon">❄️</div>
+          <div>
+            <div class="tile-title">Frigorifero</div>
+            <div class="tile-count" id="count-frigo">0 elementi</div>
+          </div>
+        </div>
+
+        <div class="tile-card tile-dispensa" onclick="openCategory('dispensa')">
+          <div class="tile-icon">🥫</div>
+          <div>
+            <div class="tile-title">Dispensa</div>
+            <div class="tile-count" id="count-dispensa">0 elementi</div>
+          </div>
+        </div>
+
+        <div class="tile-card tile-cane" onclick="openCategory('cane')">
+          <div class="tile-icon">🐶</div>
+          <div>
+            <div class="tile-title">Cibo Cane</div>
+            <div class="tile-count" id="count-cane">0 elementi</div>
+          </div>
+        </div>
+
+        <div class="tile-card tile-ripostiglio" onclick="openCategory('ripostiglio')">
+          <div class="tile-icon">🧹</div>
+          <div>
+            <div class="tile-title">Ripostiglio</div>
+            <div class="tile-count" id="count-ripostiglio">0 elementi (detersivi, saponi)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. VISTA DETTAGLIO CATEGORIA -->
+    <div id="view-category" class="view">
+      <div class="add-form-card">
+        <div class="form-row">
+          <input type="text" id="input-item-name" class="input-name" placeholder="Nome articolo (es. Biscotti cane)" autocomplete="off">
+          <input type="number" id="input-item-qty" class="input-qty" value="1" min="0">
+        </div>
+        <button class="btn-add" onclick="addItem()">+ Aggiungi a Scorte</button>
+      </div>
+
+      <div id="category-items-container" class="item-list">
+        <!-- Renderizzato via JavaScript -->
+      </div>
+    </div>
+
+    <!-- 3. VISTA LISTA DELLA SPESA -->
+    <div id="view-spesa" class="view">
+      <div class="spesa-controls">
+        <button class="btn-secondary" onclick="autoPopulateSpesa()">
+          ⚡ Carica scorte in esaurimento
+        </button>
+        <button class="btn-secondary" style="color: var(--tint-red);" onclick="clearPurchasedSpesa()">
+          🗑 Rimuovi completati
+        </button>
+      </div>
+
+      <div class="add-form-card">
+        <div class="form-row">
+          <input type="text" id="input-spesa-manual" class="input-name" placeholder="Aggiungi prodotto alla spesa..." autocomplete="off">
+          <button class="btn-add" style="padding: 0 18px;" onclick="addManualSpesa()">+</button>
+        </div>
+      </div>
+
+      <div id="spesa-items-container" class="item-list">
+        <!-- Renderizzato via JavaScript -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Tab Bar Navigazione Inferiore -->
+  <nav class="bottom-nav">
+    <button class="nav-tab active" id="tab-home" onclick="switchToTab('home')">
+      <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      Scorte
+    </button>
+    <button class="nav-tab" id="tab-spesa" onclick="switchToTab('spesa')">
+      <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+      Lista Spesa
+      <span class="badge" id="spesa-badge" style="display: none;">0</span>
+    </button>
+  </nav>
+
+  <script>
+    // Metadati e configurazione delle 4 categorie
+    const categoriesMeta = {
+      frigo: { title: "Frigorifero", icon: "❄️" },
+      dispensa: { title: "Dispensa", icon: "🥫" },
+      cane: { title: "Cibo Cane & Cura", icon: "🐶" },
+      ripostiglio: { title: "Ripostiglio & Saponi", icon: "🧹" }
+    };
+
+    // Struttura dati iniziale predefinita
+    let appData = {
+      inventory: {
+        frigo: [
+          { id: "1", name: "Latte Intero", qty: 2 },
+          { id: "2", name: "Formaggio Parmigiano", qty: 1 }
+        ],
+        dispensa: [
+          { id: "3", name: "Pasta Spaghetti", qty: 4 },
+          { id: "4", name: "Passata di pomodoro", qty: 1 },
+          { id: "5", name: "Caffè macinato", qty: 0 }
+        ],
+        cane: [
+          { id: "6", name: "Croccantini Sacchetto 12kg", qty: 1 },
+          { id: "7", name: "Snack Dentali", qty: 2 }
+        ],
+        ripostiglio: [
+          { id: "8", name: "Detersivo Lavatrice", qty: 1 },
+          { id: "9", name: "Pastiglie Lavastoviglie", qty: 0 }
+        ]
+      },
+      spesa: [
+        { id: "s1", name: "Caffè macinato", done: false, fromCat: "dispensa" },
+        { id: "s2", name: "Pastiglie Lavastoviglie", done: false, fromCat: "ripostiglio" }
+      ]
+    };
+
+    let currentCategory = null;
+
+    // Persistenza Dati tramite LocalStorage
+    function loadData() {
+      const saved = localStorage.getItem("smart_pantry_ios_pwa_v1");
+      if (saved) {
+        try {
+          appData = JSON.parse(saved);
+        } catch (e) {
+          console.error("Errore nel parsing dei dati locali:", e);
+        }
+      }
+      updateCounts();
+    }
+
+    function saveData() {
+      localStorage.setItem("smart_pantry_ios_pwa_v1", JSON.stringify(appData));
+      updateCounts();
+    }
+
+    function updateCounts() {
+      Object.keys(categoriesMeta).forEach(cat => {
+        const count = appData.inventory[cat].length;
+        const el = document.getElementById(`count-${cat}`);
+        if (el) {
+          el.textContent = `${count} ${count === 1 ? 'prodotto' : 'prodotti'}`;
+        }
+      });
+
+      const pendingSpesa = appData.spesa.filter(item => !item.done).length;
+      const badge = document.getElementById("spesa-badge");
+      if (pendingSpesa > 0) {
+        badge.textContent = pendingSpesa;
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+    }
+
+    // Gestione Schermate e Navigazione
+    function showHome() {
+      currentCategory = null;
+      document.getElementById("view-home").classList.add("active");
+      document.getElementById("view-category").classList.remove("active");
+      document.getElementById("view-spesa").classList.remove("active");
+
+      document.getElementById("tab-home").classList.add("active");
+      document.getElementById("tab-spesa").classList.remove("active");
+
+      document.getElementById("header-title").textContent = "Casa & Scorte";
+      document.getElementById("btn-header-back").style.display = "none";
+    }
+
+    function openCategory(catKey) {
+      currentCategory = catKey;
+      const meta = categoriesMeta[catKey];
+
+      document.getElementById("view-home").classList.remove("active");
+      document.getElementById("view-spesa").classList.remove("active");
+      document.getElementById("view-category").classList.add("active");
+
+      document.getElementById("header-title").textContent = `${meta.icon} ${meta.title}`;
+      document.getElementById("btn-header-back").style.display = "flex";
+
+      renderCategoryItems();
+    }
+
+    function switchToTab(tabName) {
+      if (tabName === 'home') {
+        showHome();
+      } else if (tabName === 'spesa') {
+        currentCategory = null;
+        document.getElementById("view-home").classList.remove("active");
+        document.getElementById("view-category").classList.remove("active");
+        document.getElementById("view-spesa").classList.add("active");
+
+        document.getElementById("tab-home").classList.remove("active");
+        document.getElementById("tab-spesa").classList.add("active");
+
+        document.getElementById("header-title").textContent = "🛒 Lista Spesa";
+        document.getElementById("btn-header-back").style.display = "none";
+        renderSpesaItems();
+      }
+    }
+
+    // Gestione Articoli di Categoria (CRUD Scorte)
+    function renderCategoryItems() {
+      const container = document.getElementById("category-items-container");
+      container.innerHTML = "";
+
+      const items = appData.inventory[currentCategory] || [];
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            Nessun articolo registrato in questa categoria.<br>
+            Aggiungi il primo elemento usando il modulo sopra!
+          </div>
+        `;
+        return;
+      }
+
+      items.forEach(item => {
+        let statusClass = "status-ok";
+        let statusText = "Disponibile";
+
+        if (item.qty === 0) {
+          statusClass = "status-empty";
+          statusText = "Terminato (0)";
+        } else if (item.qty <= 1) {
+          statusClass = "status-low";
+          statusText = "Scorta Bassa (1)";
+        }
+
+        const div = document.createElement("div");
+        div.className = "item-card";
+        div.innerHTML = `
+          <div class="item-info">
+            <span class="item-name">${escapeHtml(item.name)}</span>
+            <span class="item-status ${statusClass}">${statusText}</span>
+          </div>
+          <div class="item-actions">
+            <button class="btn-quick-spesa" title="Aggiungi alla lista spesa" onclick="addSingleToSpesa('${escapeHtml(item.name)}', '${currentCategory}')">🛒</button>
+            <button class="qty-btn" onclick="updateQty('${item.id}', -1)">−</button>
+            <span class="qty-value">${item.qty}</span>
+            <button class="qty-btn" onclick="updateQty('${item.id}', 1)">+</button>
+            <button class="qty-btn" style="color: var(--tint-red); font-size:14px; margin-left: 2px;" onclick="deleteItem('${item.id}')">✕</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function addItem() {
+      const nameInput = document.getElementById("input-item-name");
+      const qtyInput = document.getElementById("input-item-qty");
+      const name = nameInput.value.trim();
+      const qty = parseInt(qtyInput.value, 10);
+
+      if (!name) return;
+
+      const newItem = {
+        id: "item_" + Date.now(),
+        name: name,
+        qty: isNaN(qty) ? 1 : Math.max(0, qty)
+      };
+
+      appData.inventory[currentCategory].push(newItem);
+      saveData();
+      renderCategoryItems();
+
+      nameInput.value = "";
+      qtyInput.value = 1;
+      nameInput.blur();
+    }
+
+    function updateQty(id, delta) {
+      const item = appData.inventory[currentCategory].find(i => i.id === id);
+      if (item) {
+        item.qty = Math.max(0, item.qty + delta);
+        saveData();
+        renderCategoryItems();
+      }
+    }
+
+    function deleteItem(id) {
+      appData.inventory[currentCategory] = appData.inventory[currentCategory].filter(i => i.id !== id);
+      saveData();
+      renderCategoryItems();
+    }
+
+    // Gestione Lista della Spesa
+    function renderSpesaItems() {
+      const container = document.getElementById("spesa-items-container");
+      container.innerHTML = "";
+
+      if (appData.spesa.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            La tua lista della spesa è vuota! 🎉<br>
+            Tocca <strong>"Carica scorte in esaurimento"</strong> per importare gli articoli finiti o inseriscine uno a mano.
+          </div>
+        `;
+        return;
+      }
+
+      appData.spesa.forEach(item => {
+        const catBadge = item.fromCat ? `<span class="category-tag">${categoriesMeta[item.fromCat]?.icon || ''} ${item.fromCat}</span>` : '';
+        const div = document.createElement("div");
+        div.className = `spesa-item ${item.done ? 'checked' : ''}`;
+        div.innerHTML = `
+          <div style="display: flex; align-items: center; flex: 1;">
+            <div class="checkbox" onclick="toggleSpesa('${item.id}')">
+              ${item.done ? '✓' : ''}
+            </div>
+            <span class="spesa-text">${escapeHtml(item.name)}</span>
+            ${catBadge}
+          </div>
+          <button class="qty-btn" style="color: var(--tint-red); font-size: 13px;" onclick="removeSpesaItem('${item.id}')">✕</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function toggleSpesa(id) {
+      const item = appData.spesa.find(s => s.id === id);
+      if (item) {
+        item.done = !item.done;
+        saveData();
+        renderSpesaItems();
+      }
+    }
+
+    function addManualSpesa() {
+      const input = document.getElementById("input-spesa-manual");
+      const name = input.value.trim();
+      if (!name) return;
+
+      appData.spesa.push({
+        id: "sp_" + Date.now(),
+        name: name,
+        done: false,
+        fromCat: null
+      });
+
+      input.value = "";
+      input.blur();
+      saveData();
+      renderSpesaItems();
+    }
+
+    function addSingleToSpesa(itemName, cat) {
+      const exists = appData.spesa.some(s => s.name.toLowerCase() === itemName.toLowerCase() && !s.done);
+      if (!exists) {
+        appData.spesa.push({
+          id: "sp_" + Date.now(),
+          name: itemName,
+          done: false,
+          fromCat: cat
+        });
+        saveData();
+        alert(`"${itemName}" aggiunto alla lista della spesa!`);
+      } else {
+        alert(`"${itemName}" è già presente nella lista della spesa.`);
+      }
+    }
+
+    function autoPopulateSpesa() {
+      let added = 0;
+      Object.keys(appData.inventory).forEach(cat => {
+        appData.inventory[cat].forEach(item => {
+          if (item.qty <= 1) {
+            const alreadyInSpesa = appData.spesa.some(s => s.name.toLowerCase() === item.name.toLowerCase() && !s.done);
+            if (!alreadyInSpesa) {
+              appData.spesa.push({
+                id: "sp_" + Date.now() + Math.random().toString(36).substr(2, 4),
+                name: item.name,
+                done: false,
+                fromCat: cat
+              });
+              added++;
+            }
+          }
+        });
+      });
+
+      saveData();
+      renderSpesaItems();
+      alert(added > 0 ? `Aggiunti ${added} articoli in esaurimento alla spesa!` : "Tutti gli articoli esauriti o in scorta bassa sono già in lista.");
+    }
+
+    function clearPurchasedSpesa() {
+      appData.spesa = appData.spesa.filter(s => !s.done);
+      saveData();
+      renderSpesaItems();
+    }
+
+    function removeSpesaItem(id) {
+      appData.spesa = appData.spesa.filter(s => s.id !== id);
+      saveData();
+      renderSpesaItems();
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Inizializzazione al caricamento
+    loadData();
+
+    // Registrazione del Service Worker per supporto Offline
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('Service Worker registrato:', reg.scope))
+          .catch(err => console.error('Errore registrazione SW:', err));
+      });
+    }
+  </script>
+</body>
+</html>
