@@ -8,7 +8,7 @@
   <!-- PWA & Apple WebKit Directives -->
   <link rel="manifest" href="manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Dispensa">
   <meta name="theme-color" content="#F2F2F7">
 
@@ -27,7 +27,6 @@
       --tint-orange: #FF9500;
       --tint-purple: #AF52DE;
       --border-glass: rgba(255, 255, 255, 0.55);
-      --shadow-glass: 0 10px 32px rgba(0, 0, 0, 0.08);
       --safe-top: env(safe-area-inset-top, 20px);
       --safe-bottom: env(safe-area-inset-bottom, 20px);
     }
@@ -44,7 +43,7 @@
       background-color: var(--bg-primary);
       color: var(--text-main);
       padding-top: var(--safe-top);
-      padding-bottom: calc(var(--safe-bottom) + 90px);
+      padding-bottom: calc(var(--safe-bottom) + 95px);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -53,7 +52,7 @@
       overflow-x: hidden;
     }
 
-    /* Header Navigazione con Liquid Glass */
+    /* Header Navigazione Solido (Senza blur e senza gradienti) */
     header {
       padding: 12px 18px;
       display: flex;
@@ -61,26 +60,21 @@
       justify-content: space-between;
       position: sticky;
       top: 0;
-      background: rgba(242, 242, 247, 0.72);
-      backdrop-filter: blur(28px) saturate(180%);
-      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      background-color: var(--bg-primary);
       border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
       z-index: 50;
-      min-height: 60px;
+      min-height: 58px;
     }
 
-    .header-left {
+    .header-left, .header-right {
       width: 44px;
       display: flex;
       align-items: center;
-    }
-
-    .header-right {
-      width: 44px;
+      justify-content: center;
     }
 
     header h1 {
-      font-size: 21px;
+      font-size: 20px;
       font-weight: 700;
       letter-spacing: -0.4px;
       text-align: center;
@@ -88,10 +82,11 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      padding: 0 4px;
     }
 
-    /* Pulsante Back in Liquid Glass (solo icona circolare) */
-    .btn-back-glass {
+    /* Pulsanti Rotondi in Liquid Glass */
+    .btn-circle-glass {
       width: 38px;
       height: 38px;
       border-radius: 50%;
@@ -99,7 +94,7 @@
       background: rgba(255, 255, 255, 0.65);
       backdrop-filter: blur(20px) saturate(180%);
       -webkit-backdrop-filter: blur(20px) saturate(180%);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.85);
       color: var(--tint-blue);
       cursor: pointer;
       display: flex;
@@ -108,20 +103,19 @@
       transition: transform 0.12s ease, background 0.12s ease;
     }
 
-    .btn-back-glass svg {
+    .btn-circle-glass:active {
+      transform: scale(0.92);
+      background: rgba(255, 255, 255, 0.85);
+    }
+
+    .btn-circle-glass svg {
       width: 20px;
       height: 20px;
       stroke: currentColor;
-      stroke-width: 2.6;
+      stroke-width: 2.4;
       stroke-linecap: round;
       stroke-linejoin: round;
       fill: none;
-      margin-left: -2px;
-    }
-
-    .btn-back-glass:active {
-      transform: scale(0.92);
-      background: rgba(255, 255, 255, 0.85);
     }
 
     /* Contenitore Principale */
@@ -144,7 +138,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Griglia 4 Tile */
+    /* Griglia Tile Home */
     .tiles-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -164,6 +158,7 @@
       cursor: pointer;
       transition: transform 0.12s ease, box-shadow 0.12s ease;
       position: relative;
+      border-top: 4px solid var(--tint-blue);
     }
 
     .tile-card:active {
@@ -172,16 +167,17 @@
     }
 
     .tile-icon {
-      font-size: 40px;
+      font-size: 38px;
       line-height: 1;
       margin-bottom: 12px;
     }
 
     .tile-title {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 600;
       color: var(--text-main);
       letter-spacing: -0.3px;
+      word-break: break-word;
     }
 
     .tile-count {
@@ -191,10 +187,37 @@
       font-weight: 500;
     }
 
-    .tile-frigo { border-top: 4px solid var(--tint-blue); }
-    .tile-dispensa { border-top: 4px solid var(--tint-orange); }
-    .tile-cane { border-top: 4px solid var(--tint-purple); }
-    .tile-ripostiglio { border-top: 4px solid var(--tint-green); }
+    /* Card "Nuova Categoria" */
+    .tile-card.tile-add-new {
+      border: 2px dashed #C7C7CC;
+      background: rgba(255, 255, 255, 0.5);
+      border-top: 2px dashed #C7C7CC;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 8px;
+      box-shadow: none;
+    }
+
+    .tile-add-new .plus-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #E5E5EA;
+      color: var(--tint-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 300;
+      margin-bottom: 4px;
+    }
+
+    .tile-add-new .tile-title {
+      color: var(--tint-blue);
+      font-weight: 600;
+      font-size: 15px;
+    }
 
     /* Modulo Aggiunta Prodotti */
     .add-form-card {
@@ -525,59 +548,120 @@
       min-width: 16px;
       text-align: center;
     }
+
+    /* Modali iOS per Gestione Categorie */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: modalFadeIn 0.2s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-box {
+      background: var(--card-solid);
+      border-radius: 24px;
+      padding: 22px 20px;
+      width: 100%;
+      max-width: 330px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: -0.3px;
+    }
+
+    .modal-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .modal-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .btn-modal {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-modal-cancel {
+      background: #E5E5EA;
+      color: var(--text-main);
+    }
+
+    .btn-modal-save {
+      background: var(--tint-blue);
+      color: white;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Header Dinamico -->
+  <!-- Header Navigazione Solido -->
   <header>
     <div class="header-left">
-      <button id="btn-header-back" class="btn-back-glass" style="display: none;" onclick="showHome()" aria-label="Torna indietro">
-        <svg viewBox="0 0 24 24">
+      <button id="btn-header-back" class="btn-circle-glass" style="display: none;" onclick="showHome()" aria-label="Torna indietro">
+        <svg viewBox="0 0 24 24" style="margin-left: -2px;">
           <polyline points="15 18 9 12 15 6"></polyline>
         </svg>
       </button>
     </div>
     <h1 id="header-title">Casa & Scorte</h1>
-    <div class="header-right"></div>
+    <div class="header-right">
+      <button id="btn-header-settings" class="btn-circle-glass" style="display: none;" onclick="openCategorySettingsModal()" aria-label="Impostazioni Categoria">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+    </div>
   </header>
 
   <!-- Viste Contenuto -->
   <main>
-    <!-- 1. VISTA HOME (Griglia 4 Tile) -->
+    <!-- 1. VISTA HOME (Griglia Categorie + Nuova Categoria) -->
     <div id="view-home" class="view active">
-      <div class="tiles-grid">
-        <div class="tile-card tile-frigo" onclick="openCategory('frigo')">
-          <div class="tile-icon">❄️</div>
-          <div>
-            <div class="tile-title">Frigorifero</div>
-            <div class="tile-count" id="count-frigo">0 elementi</div>
-          </div>
-        </div>
-
-        <div class="tile-card tile-dispensa" onclick="openCategory('dispensa')">
-          <div class="tile-icon">🥫</div>
-          <div>
-            <div class="tile-title">Dispensa</div>
-            <div class="tile-count" id="count-dispensa">0 elementi</div>
-          </div>
-        </div>
-
-        <div class="tile-card tile-cane" onclick="openCategory('cane')">
-          <div class="tile-icon">🐶</div>
-          <div>
-            <div class="tile-title">Cibo Cane</div>
-            <div class="tile-count" id="count-cane">0 elementi</div>
-          </div>
-        </div>
-
-        <div class="tile-card tile-ripostiglio" onclick="openCategory('ripostiglio')">
-          <div class="tile-icon">🧹</div>
-          <div>
-            <div class="tile-title">Ripostiglio</div>
-            <div class="tile-count" id="count-ripostiglio">0 elementi</div>
-          </div>
-        </div>
+      <div class="tiles-grid" id="tiles-container">
+        <!-- Renderizzato dinamicamente via JS -->
       </div>
     </div>
 
@@ -592,11 +676,11 @@
       </div>
 
       <div id="category-items-container" class="item-list">
-        <!-- Renderizzato via JavaScript -->
+        <!-- Articoli renderizzati via JS -->
       </div>
     </div>
 
-    <!-- 3. VISTA LISTA DELLA SPESA (Con Swipe to Dismiss) -->
+    <!-- 3. VISTA LISTA DELLA SPESA -->
     <div id="view-spesa" class="view">
       <div class="spesa-controls">
         <button class="btn-secondary" onclick="autoPopulateSpesa()">
@@ -619,10 +703,48 @@
       </p>
 
       <div id="spesa-items-container" class="item-list">
-        <!-- Renderizzato via JavaScript con swipe gestures -->
+        <!-- Elementi con swipe gestures -->
       </div>
     </div>
   </main>
+
+  <!-- Modal Modifica Categoria Esistente -->
+  <div class="modal-overlay" id="modal-category-settings">
+    <div class="modal-box">
+      <div class="modal-title">Modifica Categoria</div>
+      <div class="modal-field">
+        <span class="modal-label">Nome Sezione</span>
+        <input type="text" id="input-edit-cat-title" placeholder="Nome categoria">
+      </div>
+      <div class="modal-field">
+        <span class="modal-label">Emoji Icona</span>
+        <input type="text" id="input-edit-cat-icon" placeholder="es. ❄️ o 🥫" maxlength="4" style="text-align: center; font-size: 20px;">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-modal-cancel" onclick="closeCategorySettingsModal()">Annulla</button>
+        <button class="btn-modal btn-modal-save" onclick="saveCategorySettings()">Salva</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Aggiungi Nuova Categoria -->
+  <div class="modal-overlay" id="modal-new-category">
+    <div class="modal-box">
+      <div class="modal-title">Nuova Categoria</div>
+      <div class="modal-field">
+        <span class="modal-label">Nome Categoria</span>
+        <input type="text" id="input-new-cat-title" placeholder="es. Cantina, Farmaci..." autocomplete="off">
+      </div>
+      <div class="modal-field">
+        <span class="modal-label">Emoji Icona (opzionale)</span>
+        <input type="text" id="input-new-cat-icon" placeholder="es. 🍷 o 💊" maxlength="4" style="text-align: center; font-size: 20px;">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-modal-cancel" onclick="closeNewCategoryModal()">Annulla</button>
+        <button class="btn-modal btn-modal-save" onclick="createNewCategory()">Crea</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Floating Liquid Glass Bottom Navigation Bar -->
   <nav class="liquid-glass-nav">
@@ -638,14 +760,15 @@
   </nav>
 
   <script>
-    const categoriesMeta = {
-      frigo: { title: "Frigorifero", icon: "❄️" },
-      dispensa: { title: "Dispensa", icon: "🥫" },
-      cane: { title: "Cibo Cane", icon: "🐶" },
-      ripostiglio: { title: "Ripostiglio", icon: "🧹" }
+    const DEFAULT_CATEGORIES = {
+      frigo: { title: "Frigorifero", icon: "❄️", color: "var(--tint-blue)" },
+      dispensa: { title: "Dispensa", icon: "🥫", color: "var(--tint-orange)" },
+      cane: { title: "Cibo Cane", icon: "🐶", color: "var(--tint-purple)" },
+      ripostiglio: { title: "Ripostiglio", icon: "🧹", color: "var(--tint-green)" }
     };
 
     let appData = {
+      categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
       inventory: {
         frigo: [
           { id: "1", name: "Latte Intero", qty: 2 },
@@ -674,31 +797,28 @@
     let currentCategory = null;
 
     function loadData() {
-      const saved = localStorage.getItem("smart_pantry_ios_pwa_v2");
+      const saved = localStorage.getItem("smart_pantry_ios_pwa_v3");
       if (saved) {
         try {
-          appData = JSON.parse(saved);
+          const parsed = JSON.parse(saved);
+          if (parsed.categories && parsed.inventory && parsed.spesa) {
+            appData = parsed;
+          }
         } catch (e) {
-          console.error("Errore nel parsing dei dati locali:", e);
+          console.error("Errore lettura dati salvati:", e);
         }
       }
-      updateCounts();
+      renderHomeTiles();
+      updateBadge();
     }
 
     function saveData() {
-      localStorage.setItem("smart_pantry_ios_pwa_v2", JSON.stringify(appData));
-      updateCounts();
+      localStorage.setItem("smart_pantry_ios_pwa_v3", JSON.stringify(appData));
+      renderHomeTiles();
+      updateBadge();
     }
 
-    function updateCounts() {
-      Object.keys(categoriesMeta).forEach(cat => {
-        const count = appData.inventory[cat].length;
-        const el = document.getElementById(`count-${cat}`);
-        if (el) {
-          el.textContent = `${count} ${count === 1 ? 'prodotto' : 'prodotti'}`;
-        }
-      });
-
+    function updateBadge() {
       const pendingSpesa = appData.spesa.filter(item => !item.done).length;
       const badge = document.getElementById("spesa-badge");
       if (pendingSpesa > 0) {
@@ -707,6 +827,43 @@
       } else {
         badge.style.display = "none";
       }
+    }
+
+    function renderHomeTiles() {
+      const container = document.getElementById("tiles-container");
+      container.innerHTML = "";
+
+      Object.keys(appData.categories).forEach(catKey => {
+        const cat = appData.categories[catKey];
+        const items = appData.inventory[catKey] || [];
+        const count = items.length;
+
+        const tile = document.createElement("div");
+        tile.className = "tile-card";
+        if (cat.color) {
+          tile.style.borderTopColor = cat.color;
+        }
+        tile.onclick = () => openCategory(catKey);
+
+        tile.innerHTML = `
+          <div class="tile-icon">${cat.icon || '📦'}</div>
+          <div>
+            <div class="tile-title">${escapeHtml(cat.title)}</div>
+            <div class="tile-count">${count} ${count === 1 ? 'prodotto' : 'prodotti'}</div>
+          </div>
+        `;
+        container.appendChild(tile);
+      });
+
+      // Card per aggiungere una nuova categoria
+      const addTile = document.createElement("div");
+      addTile.className = "tile-card tile-add-new";
+      addTile.onclick = openNewCategoryModal;
+      addTile.innerHTML = `
+        <div class="plus-circle">+</div>
+        <div class="tile-title">Nuova categoria</div>
+      `;
+      container.appendChild(addTile);
     }
 
     function showHome() {
@@ -720,18 +877,22 @@
 
       document.getElementById("header-title").textContent = "Casa & Scorte";
       document.getElementById("btn-header-back").style.display = "none";
+      document.getElementById("btn-header-settings").style.display = "none";
+
+      renderHomeTiles();
     }
 
     function openCategory(catKey) {
       currentCategory = catKey;
-      const meta = categoriesMeta[catKey];
+      const meta = appData.categories[catKey];
 
       document.getElementById("view-home").classList.remove("active");
       document.getElementById("view-spesa").classList.remove("active");
       document.getElementById("view-category").classList.add("active");
 
-      document.getElementById("header-title").textContent = `${meta.icon} ${meta.title}`;
+      document.getElementById("header-title").textContent = `${meta.icon || ''} ${meta.title}`;
       document.getElementById("btn-header-back").style.display = "flex";
+      document.getElementById("btn-header-settings").style.display = "flex";
 
       renderCategoryItems();
     }
@@ -750,10 +911,82 @@
 
         document.getElementById("header-title").textContent = "🛒 Lista Spesa";
         document.getElementById("btn-header-back").style.display = "none";
+        document.getElementById("btn-header-settings").style.display = "none";
         renderSpesaItems();
       }
     }
 
+    /* Modal Gestione Impostazioni Categoria */
+    function openCategorySettingsModal() {
+      if (!currentCategory) return;
+      const meta = appData.categories[currentCategory];
+      document.getElementById("input-edit-cat-title").value = meta.title || "";
+      document.getElementById("input-edit-cat-icon").value = meta.icon || "";
+      document.getElementById("modal-category-settings").classList.add("active");
+    }
+
+    function closeCategorySettingsModal() {
+      document.getElementById("modal-category-settings").classList.remove("active");
+    }
+
+    function saveCategorySettings() {
+      if (!currentCategory) return;
+      const title = document.getElementById("input-edit-cat-title").value.trim();
+      const icon = document.getElementById("input-edit-cat-icon").value.trim() || "📦";
+
+      if (!title) {
+        alert("Inserisci un nome valido.");
+        return;
+      }
+
+      appData.categories[currentCategory].title = title;
+      appData.categories[currentCategory].icon = icon;
+
+      saveData();
+      closeCategorySettingsModal();
+
+      document.getElementById("header-title").textContent = `${icon} ${title}`;
+    }
+
+    /* Modal Nuova Categoria */
+    function openNewCategoryModal() {
+      document.getElementById("input-new-cat-title").value = "";
+      document.getElementById("input-new-cat-icon").value = "";
+      document.getElementById("modal-new-category").classList.add("active");
+      setTimeout(() => document.getElementById("input-new-cat-title").focus(), 100);
+    }
+
+    function closeNewCategoryModal() {
+      document.getElementById("modal-new-category").classList.remove("active");
+    }
+
+    function createNewCategory() {
+      const title = document.getElementById("input-new-cat-title").value.trim();
+      let icon = document.getElementById("input-new-cat-icon").value.trim();
+      if (!icon) icon = "📦";
+
+      if (!title) {
+        alert("Il nome della categoria è obbligatorio.");
+        return;
+      }
+
+      const catId = "cat_" + Date.now();
+      const colors = ["var(--tint-blue)", "var(--tint-orange)", "var(--tint-purple)", "var(--tint-green)", "#5856D6", "#FF2D55"];
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+      appData.categories[catId] = {
+        title: title,
+        icon: icon,
+        color: randomColor
+      };
+
+      appData.inventory[catId] = [];
+
+      saveData();
+      closeNewCategoryModal();
+    }
+
+    /* Gestione Articoli Categoria */
     function renderCategoryItems() {
       const container = document.getElementById("category-items-container");
       container.innerHTML = "";
@@ -762,7 +995,7 @@
       if (items.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
-            Nessun articolo registrato.<br>
+            Nessun articolo in questa categoria.<br>
             Aggiungi il primo elemento usando il modulo sopra!
           </div>
         `;
@@ -814,6 +1047,10 @@
         qty: isNaN(qty) ? 1 : Math.max(0, qty)
       };
 
+      if (!appData.inventory[currentCategory]) {
+        appData.inventory[currentCategory] = [];
+      }
+
       appData.inventory[currentCategory].push(newItem);
       saveData();
       renderCategoryItems();
@@ -847,15 +1084,16 @@
         container.innerHTML = `
           <div class="empty-state">
             La lista della spesa è vuota! 🎉<br>
-            Tocca <strong>"Carica esauriti"</strong> per aggiungere le scorte finite o scrivi un prodotto a mano.
+            Tocca <strong>"Carica esauriti"</strong> per caricare gli articoli finiti o inseriscine uno manualmente.
           </div>
         `;
         return;
       }
 
       appData.spesa.forEach(item => {
-        const catBadge = item.fromCat ? `<span class="category-tag">${categoriesMeta[item.fromCat]?.icon || ''} ${item.fromCat}</span>` : '';
-        
+        const catMeta = item.fromCat ? appData.categories[item.fromCat] : null;
+        const catBadge = catMeta ? `<span class="category-tag">${catMeta.icon || ''} ${escapeHtml(catMeta.title)}</span>` : '';
+
         const swipeContainer = document.createElement("div");
         swipeContainer.className = "swipe-container";
         swipeContainer.id = `swipe-${item.id}`;
@@ -881,7 +1119,6 @@
       });
     }
 
-    /* Rilevamento Gesture Touch Swipe-to-Delete */
     function attachSwipeEvents(element, id) {
       let startX = 0;
       let currentX = 0;
@@ -899,7 +1136,6 @@
         currentX = e.touches[0].clientX;
         const diffX = currentX - startX;
 
-        // Limita lo swipe solo verso sinistra
         if (diffX < 0) {
           const clampedDiff = Math.max(diffX, -140);
           element.style.transform = `translateX(${clampedDiff}px)`;
@@ -915,15 +1151,12 @@
 
         const diffX = currentX - startX;
 
-        // Se lo swipe supera 115px, elimina direttamente
         if (diffX < -115) {
           element.style.transform = 'translateX(-100%)';
           setTimeout(() => dismissSpesaItem(id), 180);
         } else if (diffX < -50) {
-          // Mantieni aperto il tasto elimina (90px)
           element.style.transform = 'translateX(-90px)';
         } else {
-          // Ritorna in posizione iniziale
           element.style.transform = 'translateX(0px)';
         }
       });
