@@ -11,14 +11,14 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Dispensa">
   <meta name="theme-color" content="#F2F2F7">
-  
-  <!-- Apple Touch Icon per schermata Home -->
+
   <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3759/3759041.png">
 
   <style>
     :root {
       --bg-primary: #F2F2F7;
-      --card-bg: #FFFFFF;
+      --card-bg: rgba(255, 255, 255, 0.82);
+      --card-solid: #FFFFFF;
       --text-main: #1C1C1E;
       --text-muted: #8E8E93;
       --tint-blue: #007AFF;
@@ -26,7 +26,8 @@
       --tint-green: #34C759;
       --tint-orange: #FF9500;
       --tint-purple: #AF52DE;
-      --border-color: #E5E5EA;
+      --border-glass: rgba(255, 255, 255, 0.55);
+      --shadow-glass: 0 10px 32px rgba(0, 0, 0, 0.08);
       --safe-top: env(safe-area-inset-top, 20px);
       --safe-bottom: env(safe-area-inset-bottom, 20px);
     }
@@ -43,7 +44,7 @@
       background-color: var(--bg-primary);
       color: var(--text-main);
       padding-top: var(--safe-top);
-      padding-bottom: calc(var(--safe-bottom) + 75px);
+      padding-bottom: calc(var(--safe-bottom) + 90px);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -52,41 +53,75 @@
       overflow-x: hidden;
     }
 
-    /* Header Navigazione con Blur Trasparente iOS */
+    /* Header Navigazione con Liquid Glass */
     header {
-      padding: 14px 20px;
+      padding: 12px 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       position: sticky;
       top: 0;
-      background: rgba(242, 242, 247, 0.88);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+      background: rgba(242, 242, 247, 0.72);
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
       z-index: 50;
+      min-height: 60px;
+    }
+
+    .header-left {
+      width: 44px;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-right {
+      width: 44px;
     }
 
     header h1 {
-      font-size: 24px;
+      font-size: 21px;
       font-weight: 700;
       letter-spacing: -0.4px;
+      text-align: center;
+      flex: 1;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    .btn-back {
-      background: none;
-      border: none;
+    /* Pulsante Back in Liquid Glass (solo icona circolare) */
+    .btn-back-glass {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid var(--border-glass);
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.8);
       color: var(--tint-blue);
-      font-size: 17px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 4px;
-      font-weight: 500;
-      padding: 4px 8px 4px 0;
+      justify-content: center;
+      transition: transform 0.12s ease, background 0.12s ease;
+    }
+
+    .btn-back-glass svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      stroke-width: 2.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      margin-left: -2px;
+    }
+
+    .btn-back-glass:active {
+      transform: scale(0.92);
+      background: rgba(255, 255, 255, 0.85);
     }
 
     /* Contenitore Principale */
@@ -101,31 +136,31 @@
 
     .view.active {
       display: block;
-      animation: viewSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: viewFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    @keyframes viewSlideIn {
+    @keyframes viewFadeIn {
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Griglia 4 Tile (2 x 2) */
+    /* Griglia 4 Tile */
     .tiles-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 14px;
-      margin-top: 6px;
+      margin-top: 4px;
     }
 
     .tile-card {
-      background: var(--card-bg);
-      border-radius: 20px;
+      background: var(--card-solid);
+      border-radius: 22px;
       padding: 20px 16px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      min-height: 160px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+      min-height: 165px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
       cursor: pointer;
       transition: transform 0.12s ease, box-shadow 0.12s ease;
       position: relative;
@@ -156,19 +191,18 @@
       font-weight: 500;
     }
 
-    /* Dettaglio di Bordo Tematico per Categoria */
     .tile-frigo { border-top: 4px solid var(--tint-blue); }
     .tile-dispensa { border-top: 4px solid var(--tint-orange); }
     .tile-cane { border-top: 4px solid var(--tint-purple); }
     .tile-ripostiglio { border-top: 4px solid var(--tint-green); }
 
-    /* Sezione Aggiunta Prodotti */
+    /* Modulo Aggiunta Prodotti */
     .add-form-card {
-      background: var(--card-bg);
+      background: var(--card-solid);
       padding: 16px;
-      border-radius: 18px;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
-      margin-bottom: 20px;
+      border-radius: 20px;
+      box-shadow: 0 2px 14px rgba(0, 0, 0, 0.03);
+      margin-bottom: 18px;
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -179,7 +213,7 @@
       gap: 10px;
     }
 
-    input, select {
+    input {
       background: #EFEFF4;
       border: 1px solid transparent;
       padding: 12px 14px;
@@ -197,7 +231,7 @@
     }
 
     .input-name { flex: 3; }
-    .input-qty { width: 85px; text-align: center; }
+    .input-qty { width: 80px; text-align: center; }
 
     .btn-add {
       background: var(--tint-blue);
@@ -226,8 +260,8 @@
     }
 
     .item-card {
-      background: var(--card-bg);
-      border-radius: 16px;
+      background: var(--card-solid);
+      border-radius: 18px;
       padding: 14px 16px;
       display: flex;
       align-items: center;
@@ -299,10 +333,9 @@
       padding: 6px;
       cursor: pointer;
       opacity: 0.85;
-      margin-right: 2px;
     }
 
-    /* Sezione Lista Spesa */
+    /* Sezione Spesa & Swipe to Dismiss */
     .spesa-controls {
       display: flex;
       gap: 10px;
@@ -313,8 +346,8 @@
       flex: 1;
       padding: 12px 10px;
       border-radius: 12px;
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
+      background: var(--card-solid);
+      border: 1px solid #E5E5EA;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
@@ -329,15 +362,54 @@
       background: #EFEFF4;
     }
 
+    .swipe-container {
+      position: relative;
+      overflow: hidden;
+      border-radius: 18px;
+      margin-bottom: 10px;
+      touch-action: pan-y;
+      background: var(--tint-red);
+      transition: height 0.28s ease, margin 0.28s ease, opacity 0.28s ease;
+    }
+
+    .swipe-container.collapsed {
+      height: 0 !important;
+      margin-bottom: 0 !important;
+      opacity: 0;
+    }
+
+    .swipe-action-bg {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      width: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      gap: 4px;
+      cursor: pointer;
+      background: var(--tint-red);
+    }
+
     .spesa-item {
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 14px 16px;
+      position: relative;
+      background: var(--card-solid);
+      border-radius: 18px;
+      padding: 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 10px;
-      transition: opacity 0.2s ease;
+      transform: translateX(0px);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+      z-index: 2;
+    }
+
+    .spesa-item.swiping {
+      transition: none;
     }
 
     .spesa-item.checked {
@@ -353,7 +425,7 @@
       width: 24px;
       height: 24px;
       border-radius: 50%;
-      border: 2px solid var(--border-color);
+      border: 2px solid #E5E5EA;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -373,14 +445,13 @@
     .category-tag {
       font-size: 11px;
       font-weight: 600;
-      padding: 2px 7px;
-      border-radius: 6px;
+      padding: 2px 8px;
+      border-radius: 8px;
       background: #EFEFF4;
       color: var(--text-muted);
       margin-left: 8px;
     }
 
-    /* Schermata Vuota */
     .empty-state {
       text-align: center;
       padding: 45px 20px;
@@ -389,22 +460,24 @@
       line-height: 1.5;
     }
 
-    /* Barra di Navigazione Inferiore (iOS Tab Bar) */
-    nav.bottom-nav {
+    /* Floating Liquid Glass Bottom Navigation Bar */
+    nav.liquid-glass-nav {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: calc(54px + var(--safe-bottom));
-      padding-bottom: var(--safe-bottom);
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      border-top: 0.5px solid var(--border-color);
+      bottom: calc(var(--safe-bottom) + 12px);
+      left: 20px;
+      right: 20px;
+      height: 64px;
+      border-radius: 36px;
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(28px) saturate(190%);
+      -webkit-backdrop-filter: blur(28px) saturate(190%);
+      border: 1px solid var(--border-glass);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12), inset 0 1px 1.5px rgba(255, 255, 255, 0.9);
       display: flex;
       justify-content: space-around;
       align-items: center;
       z-index: 100;
+      padding: 0 10px;
     }
 
     .nav-tab {
@@ -416,25 +489,32 @@
       border: none;
       color: var(--text-muted);
       font-size: 11px;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
       position: relative;
       flex: 1;
+      height: 100%;
+      justify-content: center;
+      transition: color 0.15s ease, transform 0.12s ease;
     }
 
     .nav-tab.active {
       color: var(--tint-blue);
     }
 
+    .nav-tab:active {
+      transform: scale(0.92);
+    }
+
     .nav-tab svg {
-      width: 24px;
-      height: 24px;
+      width: 23px;
+      height: 23px;
       fill: currentColor;
     }
 
     .badge {
       position: absolute;
-      top: -2px;
+      top: 8px;
       right: 28%;
       background: var(--tint-red);
       color: white;
@@ -451,11 +531,15 @@
 
   <!-- Header Dinamico -->
   <header>
-    <button id="btn-header-back" class="btn-back" style="display: none;" onclick="showHome()">
-      ‹ Scorte
-    </button>
+    <div class="header-left">
+      <button id="btn-header-back" class="btn-back-glass" style="display: none;" onclick="showHome()" aria-label="Torna indietro">
+        <svg viewBox="0 0 24 24">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+    </div>
     <h1 id="header-title">Casa & Scorte</h1>
-    <div style="width: 24px;"></div>
+    <div class="header-right"></div>
   </header>
 
   <!-- Viste Contenuto -->
@@ -491,7 +575,7 @@
           <div class="tile-icon">🧹</div>
           <div>
             <div class="tile-title">Ripostiglio</div>
-            <div class="tile-count" id="count-ripostiglio">0 elementi (detersivi, saponi)</div>
+            <div class="tile-count" id="count-ripostiglio">0 elementi</div>
           </div>
         </div>
       </div>
@@ -501,7 +585,7 @@
     <div id="view-category" class="view">
       <div class="add-form-card">
         <div class="form-row">
-          <input type="text" id="input-item-name" class="input-name" placeholder="Nome articolo (es. Biscotti cane)" autocomplete="off">
+          <input type="text" id="input-item-name" class="input-name" placeholder="Aggiungi articolo (es. Latte)" autocomplete="off">
           <input type="number" id="input-item-qty" class="input-qty" value="1" min="0">
         </div>
         <button class="btn-add" onclick="addItem()">+ Aggiungi a Scorte</button>
@@ -512,32 +596,36 @@
       </div>
     </div>
 
-    <!-- 3. VISTA LISTA DELLA SPESA -->
+    <!-- 3. VISTA LISTA DELLA SPESA (Con Swipe to Dismiss) -->
     <div id="view-spesa" class="view">
       <div class="spesa-controls">
         <button class="btn-secondary" onclick="autoPopulateSpesa()">
-          ⚡ Carica scorte in esaurimento
+          ⚡ Carica esauriti
         </button>
         <button class="btn-secondary" style="color: var(--tint-red);" onclick="clearPurchasedSpesa()">
-          🗑 Rimuovi completati
+          🗑 Rimuovi fatti
         </button>
       </div>
 
       <div class="add-form-card">
         <div class="form-row">
-          <input type="text" id="input-spesa-manual" class="input-name" placeholder="Aggiungi prodotto alla spesa..." autocomplete="off">
+          <input type="text" id="input-spesa-manual" class="input-name" placeholder="Aggiungi alla lista spesa..." autocomplete="off">
           <button class="btn-add" style="padding: 0 18px;" onclick="addManualSpesa()">+</button>
         </div>
       </div>
 
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; padding-left: 4px;">
+        💡 Scorri a sinistra su un prodotto per eliminarlo
+      </p>
+
       <div id="spesa-items-container" class="item-list">
-        <!-- Renderizzato via JavaScript -->
+        <!-- Renderizzato via JavaScript con swipe gestures -->
       </div>
     </div>
   </main>
 
-  <!-- Tab Bar Navigazione Inferiore -->
-  <nav class="bottom-nav">
+  <!-- Floating Liquid Glass Bottom Navigation Bar -->
+  <nav class="liquid-glass-nav">
     <button class="nav-tab active" id="tab-home" onclick="switchToTab('home')">
       <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
       Scorte
@@ -550,20 +638,18 @@
   </nav>
 
   <script>
-    // Metadati e configurazione delle 4 categorie
     const categoriesMeta = {
       frigo: { title: "Frigorifero", icon: "❄️" },
       dispensa: { title: "Dispensa", icon: "🥫" },
-      cane: { title: "Cibo Cane & Cura", icon: "🐶" },
-      ripostiglio: { title: "Ripostiglio & Saponi", icon: "🧹" }
+      cane: { title: "Cibo Cane", icon: "🐶" },
+      ripostiglio: { title: "Ripostiglio", icon: "🧹" }
     };
 
-    // Struttura dati iniziale predefinita
     let appData = {
       inventory: {
         frigo: [
           { id: "1", name: "Latte Intero", qty: 2 },
-          { id: "2", name: "Formaggio Parmigiano", qty: 1 }
+          { id: "2", name: "Parmigiano Reggiano", qty: 1 }
         ],
         dispensa: [
           { id: "3", name: "Pasta Spaghetti", qty: 4 },
@@ -587,9 +673,8 @@
 
     let currentCategory = null;
 
-    // Persistenza Dati tramite LocalStorage
     function loadData() {
-      const saved = localStorage.getItem("smart_pantry_ios_pwa_v1");
+      const saved = localStorage.getItem("smart_pantry_ios_pwa_v2");
       if (saved) {
         try {
           appData = JSON.parse(saved);
@@ -601,7 +686,7 @@
     }
 
     function saveData() {
-      localStorage.setItem("smart_pantry_ios_pwa_v1", JSON.stringify(appData));
+      localStorage.setItem("smart_pantry_ios_pwa_v2", JSON.stringify(appData));
       updateCounts();
     }
 
@@ -624,7 +709,6 @@
       }
     }
 
-    // Gestione Schermate e Navigazione
     function showHome() {
       currentCategory = null;
       document.getElementById("view-home").classList.add("active");
@@ -670,7 +754,6 @@
       }
     }
 
-    // Gestione Articoli di Categoria (CRUD Scorte)
     function renderCategoryItems() {
       const container = document.getElementById("category-items-container");
       container.innerHTML = "";
@@ -679,7 +762,7 @@
       if (items.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
-            Nessun articolo registrato in questa categoria.<br>
+            Nessun articolo registrato.<br>
             Aggiungi il primo elemento usando il modulo sopra!
           </div>
         `;
@@ -706,7 +789,7 @@
             <span class="item-status ${statusClass}">${statusText}</span>
           </div>
           <div class="item-actions">
-            <button class="btn-quick-spesa" title="Aggiungi alla lista spesa" onclick="addSingleToSpesa('${escapeHtml(item.name)}', '${currentCategory}')">🛒</button>
+            <button class="btn-quick-spesa" title="Aggiungi a spesa" onclick="addSingleToSpesa('${escapeHtml(item.name)}', '${currentCategory}')">🛒</button>
             <button class="qty-btn" onclick="updateQty('${item.id}', -1)">−</button>
             <span class="qty-value">${item.qty}</span>
             <button class="qty-btn" onclick="updateQty('${item.id}', 1)">+</button>
@@ -755,7 +838,7 @@
       renderCategoryItems();
     }
 
-    // Gestione Lista della Spesa
+    /* Gestione Lista Spesa con Swipe to Dismiss */
     function renderSpesaItems() {
       const container = document.getElementById("spesa-items-container");
       container.innerHTML = "";
@@ -763,8 +846,8 @@
       if (appData.spesa.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
-            La tua lista della spesa è vuota! 🎉<br>
-            Tocca <strong>"Carica scorte in esaurimento"</strong> per importare gli articoli finiti o inseriscine uno a mano.
+            La lista della spesa è vuota! 🎉<br>
+            Tocca <strong>"Carica esauriti"</strong> per aggiungere le scorte finite o scrivi un prodotto a mano.
           </div>
         `;
         return;
@@ -772,20 +855,90 @@
 
       appData.spesa.forEach(item => {
         const catBadge = item.fromCat ? `<span class="category-tag">${categoriesMeta[item.fromCat]?.icon || ''} ${item.fromCat}</span>` : '';
-        const div = document.createElement("div");
-        div.className = `spesa-item ${item.done ? 'checked' : ''}`;
-        div.innerHTML = `
-          <div style="display: flex; align-items: center; flex: 1;">
-            <div class="checkbox" onclick="toggleSpesa('${item.id}')">
-              ${item.done ? '✓' : ''}
-            </div>
-            <span class="spesa-text">${escapeHtml(item.name)}</span>
-            ${catBadge}
+        
+        const swipeContainer = document.createElement("div");
+        swipeContainer.className = "swipe-container";
+        swipeContainer.id = `swipe-${item.id}`;
+
+        swipeContainer.innerHTML = `
+          <div class="swipe-action-bg" onclick="dismissSpesaItem('${item.id}')">
+            <span>🗑</span> Elimina
           </div>
-          <button class="qty-btn" style="color: var(--tint-red); font-size: 13px;" onclick="removeSpesaItem('${item.id}')">✕</button>
+          <div class="spesa-item ${item.done ? 'checked' : ''}" id="item-${item.id}">
+            <div style="display: flex; align-items: center; flex: 1;">
+              <div class="checkbox" onclick="toggleSpesa('${item.id}')">
+                ${item.done ? '✓' : ''}
+              </div>
+              <span class="spesa-text">${escapeHtml(item.name)}</span>
+              ${catBadge}
+            </div>
+            <span style="color: var(--text-muted); font-size: 16px; padding-left: 6px;">‹</span>
+          </div>
         `;
-        container.appendChild(div);
+
+        container.appendChild(swipeContainer);
+        attachSwipeEvents(swipeContainer.querySelector('.spesa-item'), item.id);
       });
+    }
+
+    /* Rilevamento Gesture Touch Swipe-to-Delete */
+    function attachSwipeEvents(element, id) {
+      let startX = 0;
+      let currentX = 0;
+      let isSwiping = false;
+
+      element.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        currentX = startX;
+        isSwiping = true;
+        element.classList.add('swiping');
+      }, { passive: true });
+
+      element.addEventListener('touchmove', (e) => {
+        if (!isSwiping) return;
+        currentX = e.touches[0].clientX;
+        const diffX = currentX - startX;
+
+        // Limita lo swipe solo verso sinistra
+        if (diffX < 0) {
+          const clampedDiff = Math.max(diffX, -140);
+          element.style.transform = `translateX(${clampedDiff}px)`;
+        } else {
+          element.style.transform = 'translateX(0px)';
+        }
+      }, { passive: true });
+
+      element.addEventListener('touchend', () => {
+        if (!isSwiping) return;
+        isSwiping = false;
+        element.classList.remove('swiping');
+
+        const diffX = currentX - startX;
+
+        // Se lo swipe supera 115px, elimina direttamente
+        if (diffX < -115) {
+          element.style.transform = 'translateX(-100%)';
+          setTimeout(() => dismissSpesaItem(id), 180);
+        } else if (diffX < -50) {
+          // Mantieni aperto il tasto elimina (90px)
+          element.style.transform = 'translateX(-90px)';
+        } else {
+          // Ritorna in posizione iniziale
+          element.style.transform = 'translateX(0px)';
+        }
+      });
+    }
+
+    function dismissSpesaItem(id) {
+      const container = document.getElementById(`swipe-${id}`);
+      if (container) {
+        container.classList.add('collapsed');
+        setTimeout(() => {
+          removeSpesaItem(id);
+        }, 280);
+      } else {
+        removeSpesaItem(id);
+      }
     }
 
     function toggleSpesa(id) {
@@ -825,9 +978,9 @@
           fromCat: cat
         });
         saveData();
-        alert(`"${itemName}" aggiunto alla lista della spesa!`);
+        alert(`"${itemName}" aggiunto alla lista spesa!`);
       } else {
-        alert(`"${itemName}" è già presente nella lista della spesa.`);
+        alert(`"${itemName}" è già presente nella lista spesa.`);
       }
     }
 
@@ -852,7 +1005,7 @@
 
       saveData();
       renderSpesaItems();
-      alert(added > 0 ? `Aggiunti ${added} articoli in esaurimento alla spesa!` : "Tutti gli articoli esauriti o in scorta bassa sono già in lista.");
+      alert(added > 0 ? `Aggiunti ${added} articoli in esaurimento!` : "Tutti gli articoli esauriti sono già in lista.");
     }
 
     function clearPurchasedSpesa() {
@@ -873,15 +1026,13 @@
       return div.innerHTML;
     }
 
-    // Inizializzazione al caricamento
     loadData();
 
-    // Registrazione del Service Worker per supporto Offline
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js')
-          .then(reg => console.log('Service Worker registrato:', reg.scope))
-          .catch(err => console.error('Errore registrazione SW:', err));
+          .then(reg => console.log('SW registrato:', reg.scope))
+          .catch(err => console.error('Errore SW:', err));
       });
     }
   </script>
