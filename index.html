@@ -637,6 +637,11 @@
       font-weight: 600;
       border: none;
       cursor: pointer;
+      transition: opacity 0.12s ease;
+    }
+
+    .btn-modal:active {
+      opacity: 0.75;
     }
 
     .btn-modal-cancel {
@@ -647,6 +652,17 @@
     .btn-modal-save {
       background: var(--tint-blue);
       color: white;
+    }
+
+    .btn-modal-delete {
+      width: 100%;
+      background: #FFEBEA;
+      color: var(--tint-red);
+      border: 1px solid rgba(255, 59, 48, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
   </style>
 </head>
@@ -748,7 +764,7 @@
     </div>
   </div>
 
-  <!-- Modal Modifica Categoria -->
+  <!-- Modal Modifica Categoria (con opzione Elimina) -->
   <div class="modal-overlay" id="modal-category-settings">
     <div class="modal-box">
       <div class="modal-title">Modifica Categoria</div>
@@ -763,6 +779,11 @@
       <div class="modal-actions">
         <button class="btn-modal btn-modal-cancel" onclick="closeCategorySettingsModal()">Annulla</button>
         <button class="btn-modal btn-modal-save" onclick="saveCategorySettings()">Salva</button>
+      </div>
+      <div style="border-top: 0.5px solid rgba(0, 0, 0, 0.1); margin-top: 4px; padding-top: 10px;">
+        <button class="btn-modal btn-modal-delete" onclick="deleteCurrentCategory()">
+          <span>🗑</span> Elimina Categoria
+        </button>
       </div>
     </div>
   </div>
@@ -801,26 +822,22 @@
 
   <script>
     /* ==========================================================
-       1. CONFIGURAZIONE FIREBASE CONDIVISA (Gratuita)
-       Sostituisci questi parametri con quelli del tuo progetto
-       Firebase (vedi capitolo 3 per la procedura rapida).
+       1. CONFIGURAZIONE FIREBASE CONDIVISA
     ========================================================== */
     const firebaseConfig = {
-      apiKey: "AIzaSyDhtvjCZstnA0zAFeNZJHRRvFHxiGznrqk",
-      authDomain: "listapp-a19e7.firebaseapp.com",
-      databaseURL: "https://listapp-a19e7-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "listapp-a19e7",
-      storageBucket: "listapp-a19e7.firebasestorage.app",
-      messagingSenderId: "157156284614",
-      appId: "1:157156284614:web:53538938edb6883d0e9fc7",
-      measurementId: "G-NBRZM1VV4T"
+      apiKey: "INSERISCI_LA_TUA_API_KEY",
+      authDomain: "tuo-progetto.firebaseapp.com",
+      databaseURL: "https://tuo-progetto-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "tuo-progetto",
+      storageBucket: "tuo-progetto.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:abcdef"
     };
 
     let fbDatabase = null;
     let householdRef = null;
     let isFirebaseConfigured = false;
 
-    // Inizializza Firebase se configurato
     if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "INSERISCI_LA_TUA_API_KEY") {
       try {
         firebase.initializeApp(firebaseConfig);
@@ -891,12 +908,11 @@
 
       setSyncDot("syncing");
 
-      // Ascolto in tempo reale: scatta ogni volta che Utente 1 o Utente 2 modificano qualcosa!
+      // Ascolto in tempo reale tra i due dispositivi
       householdRef.on("value", (snapshot) => {
         const remoteData = snapshot.val();
         if (remoteData) {
           appData = remoteData;
-          // Assicura struttura valida
           if (!appData.categories) appData.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
           if (!appData.inventory) appData.inventory = {};
           if (!appData.spesa) appData.spesa = [];
@@ -905,7 +921,6 @@
           refreshCurrentView();
           setSyncDot("online");
         } else {
-          // Se la stanza è vuota nel cloud, carica i dati correnti locali
           syncToCloud();
           setSyncDot("online");
         }
@@ -951,10 +966,12 @@
     function refreshCurrentView() {
       renderHomeTiles();
       updateBadge();
-      if (currentCategory) {
+      if (currentCategory && appData.categories && appData.categories[currentCategory]) {
         renderCategoryItems();
       } else if (document.getElementById("view-spesa").classList.contains("active")) {
         renderSpesaItems();
+      } else {
+        showHome();
       }
     }
 
@@ -1088,9 +1105,9 @@
       }
     }
 
-    /* Modal Impostazioni Categoria */
+    /* Modal Impostazioni Categoria (Modifica & Elimina) */
     function openCategorySettingsModal() {
-      if (!currentCategory) return;
+      if (!currentCategory || !appData.categories[currentCategory]) return;
       const meta = appData.categories[currentCategory];
       document.getElementById("input-edit-cat-title").value = meta.title || "";
       document.getElementById("input-edit-cat-icon").value = meta.icon || "";
@@ -1102,7 +1119,7 @@
     }
 
     function saveCategorySettings() {
-      if (!currentCategory) return;
+      if (!currentCategory || !appData.categories[currentCategory]) return;
       const title = document.getElementById("input-edit-cat-title").value.trim();
       const icon = document.getElementById("input-edit-cat-icon").value.trim() || "📦";
 
@@ -1117,6 +1134,41 @@
       persistData();
       closeCategorySettingsModal();
       document.getElementById("header-title").textContent = `${icon} ${title}`;
+    }
+
+    function deleteCurrentCategory() {
+      if (!currentCategory || !appData.categories[currentCategory]) return;
+      const catTitle = appData.categories[currentCategory].title || "questa categoria";
+      const itemsCount = (appData.inventory && appData.inventory[currentCategory]) ? appData.inventory[currentCategory].length : 0;
+
+      const confirmMessage = itemsCount > 0
+        ? `Sei sicuro di voler eliminare "${catTitle}" e i suoi ${itemsCount} articoli salvati?\n\nL'operazione non può essere annullata.`
+        : `Sei sicuro di voler eliminare la categoria "${catTitle}"?`;
+
+      if (!confirm(confirmMessage)) {
+        return;
+      }
+
+      const deletedCatKey = currentCategory;
+
+      // 1. Rimuovi la categoria e il suo inventario
+      delete appData.categories[deletedCatKey];
+      if (appData.inventory && appData.inventory[deletedCatKey]) {
+        delete appData.inventory[deletedCatKey];
+      }
+
+      // 2. Rimuovi il riferimento alla categoria negli articoli della spesa
+      if (appData.spesa) {
+        appData.spesa.forEach(item => {
+          if (item.fromCat === deletedCatKey) {
+            item.fromCat = null;
+          }
+        });
+      }
+
+      closeCategorySettingsModal();
+      persistData();
+      showHome();
     }
 
     /* Modal Nuova Categoria */
