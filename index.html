@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Dispensa & Casa</title>
 
   <!-- PWA & Apple WebKit Directives -->
@@ -10,7 +10,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Dispensa">
-  <meta name="theme-color" content="#F2F2F7">
+  <meta name="theme-color" content="#EDF0F7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#05070D" media="(prefers-color-scheme: dark)">
 
   <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3759/3759041.png">
 
@@ -19,656 +20,345 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
+    /* ==========================================================
+       LIQUID GLASS — Apple HIG
+       Glass sul livello dei controlli (header, tab bar, tile, sheet),
+       materiali più sobri sui contenuti (righe lista).
+    ========================================================== */
     :root {
-      --bg-primary: #F2F2F7;
-      --card-bg: rgba(255, 255, 255, 0.82);
-      --card-solid: #FFFFFF;
+      color-scheme: light dark;
+      --tint-blue: #007AFF; --tint-red: #FF3B30; --tint-green: #34C759;
+      --tint-orange: #FF9500; --tint-purple: #AF52DE;
       --text-main: #1C1C1E;
-      --text-muted: #8E8E93;
-      --tint-blue: #007AFF;
-      --tint-red: #FF3B30;
-      --tint-green: #34C759;
-      --tint-orange: #FF9500;
-      --tint-purple: #AF52DE;
-      --border-glass: rgba(255, 255, 255, 0.55);
-      --safe-top: env(safe-area-inset-top, 20px);
-      --safe-bottom: env(safe-area-inset-bottom, 20px);
+      --text-muted: rgba(60, 60, 67, 0.62);
+      --ok: #1E8E3E; --low: #B25E00; --empty: #D70015;
+      --base: #EDF0F7;
+      --edge: rgba(237, 240, 247, 0.55);
+      --glass: rgba(255, 255, 255, 0.42);
+      --glass-strong: rgba(255, 255, 255, 0.7);
+      --row: rgba(255, 255, 255, 0.6);
+      --row-solid: #F6F7FB;
+      --field: rgba(120, 120, 128, 0.12);
+      --hi: rgba(255, 255, 255, 0.85);
+      --lo: rgba(0, 0, 0, 0.06);
+      --rim-a: rgba(255, 255, 255, 0.95);
+      --rim-b: rgba(255, 255, 255, 0.08);
+      --shadow: rgba(31, 45, 90, 0.16);
+      --blob1: #8DB8FF; --blob2: #9FE8D0; --blob3: #FFCFA3;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --spring: cubic-bezier(0.34, 1.45, 0.64, 1);
     }
-
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --tint-blue: #0A84FF; --tint-red: #FF453A; --tint-green: #30D158;
+        --tint-orange: #FF9F0A; --tint-purple: #BF5AF2;
+        --text-main: #F5F5F7;
+        --text-muted: rgba(235, 235, 245, 0.6);
+        --ok: #32D74B; --low: #FFB340; --empty: #FF6961;
+        --base: #05070D;
+        --edge: rgba(5, 7, 13, 0.55);
+        --glass: rgba(44, 48, 64, 0.4);
+        --glass-strong: rgba(34, 38, 52, 0.74);
+        --row: rgba(62, 66, 84, 0.36);
+        --row-solid: #1A1D28;
+        --field: rgba(120, 120, 128, 0.24);
+        --hi: rgba(255, 255, 255, 0.18);
+        --lo: rgba(0, 0, 0, 0.4);
+        --rim-a: rgba(255, 255, 255, 0.38);
+        --rim-b: rgba(255, 255, 255, 0.03);
+        --shadow: rgba(0, 0, 0, 0.55);
+        --blob1: #1B3F8F; --blob2: #0F5C55; --blob3: #6B3A1F;
+      }
+    }
     * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+      box-sizing: border-box; margin: 0; padding: 0;
       -webkit-tap-highlight-color: transparent;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
     }
-
+    html {
+      background: var(--base);
+      font: 17px/1.3 -apple-system, system-ui, "SF Pro Text", "Helvetica Neue", sans-serif;
+      font: -apple-system-body; /* Dynamic Type su iOS */
+      -webkit-text-size-adjust: 100%;
+    }
+    button, input { font: inherit; color: inherit; }
     body {
-      background-color: var(--bg-primary);
       color: var(--text-main);
-      padding-top: var(--safe-top);
-      padding-bottom: calc(var(--safe-bottom) + 95px);
+      padding-bottom: calc(var(--safe-bottom) + 104px);
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      user-select: none;
-      -webkit-user-select: none;
+      display: flex; flex-direction: column;
+      -webkit-user-select: none; user-select: none;
       overflow-x: hidden;
     }
+    input { -webkit-user-select: text; user-select: text; }
+    /* Sfondo ambientale: dà materia da rifrangere al vetro */
+    body::before {
+      content: ""; position: fixed; inset: 0; z-index: -1;
+      background:
+        radial-gradient(60% 40% at 12% 6%, var(--blob1), transparent 70%),
+        radial-gradient(55% 40% at 98% 40%, var(--blob2), transparent 70%),
+        radial-gradient(60% 45% at 18% 100%, var(--blob3), transparent 70%),
+        var(--base);
+    }
 
-    /* Header Navigazione Solido (Senza blur e senza gradienti) */
+    /* ---------- Materiale Liquid Glass ---------- */
+    :is(.btn-circle-glass, nav.liquid-glass-nav, .tile-card, .add-form-card, .btn-secondary, .modal-box) {
+      position: relative; isolation: isolate;
+      background: var(--glass);
+      -webkit-backdrop-filter: blur(22px) saturate(180%);
+      backdrop-filter: blur(22px) saturate(180%);
+      box-shadow: inset 0 1px 0 var(--hi), inset 0 -1px 0 var(--lo), 0 10px 30px -10px var(--shadow);
+    }
+    /* Bordo speculare che cattura la luce */
+    :is(.btn-circle-glass, nav.liquid-glass-nav, .tile-card, .add-form-card, .btn-secondary, .modal-box)::before {
+      content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
+      pointer-events: none;
+      background: linear-gradient(140deg, var(--rim-a), var(--rim-b) 35%, var(--rim-b) 65%, var(--rim-a));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+    }
+
+    /* ---------- Header con scroll-edge effect ---------- */
     header {
-      padding: 12px 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      background-color: var(--bg-primary);
-      border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
-      z-index: 50;
-      min-height: 58px;
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; gap: 8px;
+      padding: calc(var(--safe-top) + 6px) 16px 6px;
+      min-height: calc(var(--safe-top) + 58px);
     }
-
-    .header-left, .header-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    header::before {
+      content: ""; position: absolute; inset: 0 0 -20px; z-index: -1; pointer-events: none;
+      background: linear-gradient(var(--edge), transparent);
+      -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+      -webkit-mask-image: linear-gradient(#000 55%, transparent);
+      mask-image: linear-gradient(#000 55%, transparent);
     }
-
+    .header-left, .header-right { display: flex; align-items: center; gap: 8px; min-width: 96px; }
+    .header-right { justify-content: flex-end; }
     header h1 {
-      font-size: 19px;
-      font-weight: 700;
-      letter-spacing: -0.4px;
-      text-align: center;
-      flex: 1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      padding: 0 4px;
+      flex: 1; text-align: center; font-size: 1rem; font-weight: 600; letter-spacing: -0.2px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-
-    /* Pulsanti Rotondi in Liquid Glass */
     .btn-circle-glass {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      border: 1px solid var(--border-glass);
-      background: rgba(255, 255, 255, 0.65);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.85);
-      color: var(--tint-blue);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.12s ease, background 0.12s ease;
-      position: relative;
+      width: 44px; height: 44px; border-radius: 50%; border: none;
+      color: var(--text-main); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.35s var(--spring);
     }
-
-    .btn-circle-glass:active {
-      transform: scale(0.92);
-      background: rgba(255, 255, 255, 0.85);
-    }
-
+    .btn-circle-glass:active { transform: scale(0.9); transition-duration: 0.1s; }
     .btn-circle-glass svg {
-      width: 19px;
-      height: 19px;
-      stroke: currentColor;
-      stroke-width: 2.3;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      fill: none;
+      width: 20px; height: 20px; stroke: currentColor; stroke-width: 2;
+      stroke-linecap: round; stroke-linejoin: round; fill: none;
     }
-
     .sync-indicator {
-      position: absolute;
-      top: 2px;
-      right: 2px;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #C7C7CC;
+      position: absolute; top: 7px; right: 7px; width: 10px; height: 10px; border-radius: 50%;
+      background: #AEAEB2; border: 2px solid var(--base);
     }
     .sync-indicator.online { background: var(--tint-green); }
     .sync-indicator.syncing { background: var(--tint-orange); }
 
-    /* Contenitore Principale */
-    main {
-      padding: 14px 18px;
-      flex: 1;
-    }
+    main { padding: 6px 20px 14px; flex: 1; }
+    .view { display: none; }
+    .view.active { display: block; animation: viewIn 0.4s var(--spring); }
+    @keyframes viewIn { from { opacity: 0; transform: translateY(8px) scale(0.99); } to { opacity: 1; transform: none; } }
 
-    .view {
-      display: none;
-    }
-
-    .view.active {
-      display: block;
-      animation: viewFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    @keyframes viewFadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Griglia Tile Home */
-    .tiles-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-      margin-top: 4px;
-    }
-
+    /* ---------- Tile Home ---------- */
+    .tiles-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
     .tile-card {
-      background: var(--card-solid);
-      border-radius: 22px;
-      padding: 20px 16px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      min-height: 165px;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+      --tint: var(--tint-blue);
+      border-radius: 30px; padding: 16px; min-height: 160px;
+      display: flex; flex-direction: column; justify-content: space-between;
       cursor: pointer;
-      transition: transform 0.12s ease, box-shadow 0.12s ease;
-      position: relative;
-      border-top: 4px solid var(--tint-blue);
+      transition: transform 0.4s var(--spring);
     }
-
-    .tile-card:active {
-      transform: scale(0.96);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    @supports (background: color-mix(in srgb, red 10%, blue)) {
+      .tile-card { background: radial-gradient(120% 90% at 0% 0%, color-mix(in srgb, var(--tint) 30%, transparent), transparent 62%), var(--glass); }
     }
-
-    .tile-icon {
-      font-size: 38px;
-      line-height: 1;
-      margin-bottom: 12px;
+    .tile-card:active { transform: scale(0.95); transition-duration: 0.1s; }
+    .tile-icon, .plus-circle {
+      width: 54px; height: 54px; border-radius: 50%;
+      display: grid; place-items: center; font-size: 28px; line-height: 1;
+      background: rgba(255, 255, 255, 0.35);
+      box-shadow: inset 0 1px 0 var(--hi), inset 0 -1px 0 var(--lo);
     }
-
-    .tile-title {
-      font-size: 17px;
-      font-weight: 600;
-      color: var(--text-main);
-      letter-spacing: -0.3px;
-      word-break: break-word;
+    @supports (background: color-mix(in srgb, red 10%, blue)) {
+      .tile-icon, .plus-circle { background: color-mix(in srgb, var(--tint) 22%, transparent); }
     }
+    .tile-title { font-size: 1.0625rem; font-weight: 600; letter-spacing: -0.3px; word-break: break-word; }
+    .tile-count { font-size: 0.8125rem; color: var(--text-muted); margin-top: 2px; font-weight: 500; }
+    .tile-card.tile-add-new { align-items: center; justify-content: center; text-align: center; gap: 10px; }
+    .plus-circle { color: var(--tint-blue); font-size: 30px; font-weight: 300; }
+    .tile-add-new .tile-title { color: var(--tint-blue); font-size: 0.9375rem; }
 
-    .tile-count {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-top: 4px;
-      font-weight: 500;
-    }
-
-    /* Card Nuova Categoria */
-    .tile-card.tile-add-new {
-      border: 2px dashed #C7C7CC;
-      background: rgba(255, 255, 255, 0.5);
-      border-top: 2px dashed #C7C7CC;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      gap: 8px;
-      box-shadow: none;
-    }
-
-    .tile-add-new .plus-circle {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: #E5E5EA;
-      color: var(--tint-blue);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      font-weight: 300;
-      margin-bottom: 4px;
-    }
-
-    .tile-add-new .tile-title {
-      color: var(--tint-blue);
-      font-weight: 600;
-      font-size: 15px;
-    }
-
-    /* Modulo Aggiunta Prodotti */
-    .add-form-card {
-      background: var(--card-solid);
-      padding: 16px;
-      border-radius: 20px;
-      box-shadow: 0 2px 14px rgba(0, 0, 0, 0.03);
-      margin-bottom: 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .form-row {
-      display: flex;
-      gap: 10px;
-    }
-
+    /* ---------- Form ---------- */
+    .add-form-card { border-radius: 28px; padding: 14px; margin-bottom: 18px; display: flex; flex-direction: column; gap: 10px; }
+    .form-row { display: flex; gap: 10px; }
     input {
-      background: #EFEFF4;
-      border: 1px solid transparent;
-      padding: 12px 14px;
-      border-radius: 12px;
-      font-size: 16px;
-      color: var(--text-main);
-      outline: none;
-      -webkit-appearance: none;
-      transition: border-color 0.2s, background-color 0.2s;
+      background: var(--field); border: none; padding: 0 16px; min-height: 48px;
+      border-radius: 24px; font-size: 1.0625rem; color: var(--text-main); outline: none;
+      -webkit-appearance: none; appearance: none; min-width: 0;
+      transition: box-shadow 0.2s, background-color 0.2s;
     }
-
-    input:focus {
-      border-color: var(--tint-blue);
-      background: #FFFFFF;
-    }
-
+    input::placeholder { color: var(--text-muted); }
+    input:focus { box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.35); background: var(--glass-strong); }
     .input-name { flex: 3; }
-    .input-qty { width: 80px; text-align: center; }
-
-    .btn-add {
-      background: var(--tint-blue);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      padding: 14px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+    .input-qty { width: 76px; text-align: center; }
+    .btn-add, .btn-modal-save {
+      background: var(--tint-blue); color: #fff; border: none; border-radius: 999px;
+      min-height: 50px; padding: 0 20px; font-size: 1.0625rem; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -1px 0 rgba(0, 0, 0, 0.12), 0 8px 18px -6px rgba(0, 122, 255, 0.55);
+      transition: transform 0.35s var(--spring);
     }
+    .btn-add:active, .btn-modal-save:active { transform: scale(0.96); transition-duration: 0.1s; }
 
-    .btn-add:active {
-      opacity: 0.85;
-    }
-
-    /* Lista Articoli Scorte */
-    .item-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
+    /* ---------- Righe lista (livello contenuti) ---------- */
+    .item-list { display: flex; flex-direction: column; gap: 10px; }
     .item-card {
-      background: var(--card-solid);
-      border-radius: 18px;
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+      background: var(--row); border-radius: 22px; padding: 10px 12px 10px 16px; min-height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: inset 0 1px 0 var(--hi), inset 0 0 0 0.5px var(--lo), 0 6px 18px -10px var(--shadow);
     }
-
-    .item-info {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-      flex: 1;
-      margin-right: 12px;
+    .item-info { display: flex; flex-direction: column; gap: 2px; flex: 1; margin-right: 8px; min-width: 0; }
+    .item-name { font-size: 1.0625rem; font-weight: 600; letter-spacing: -0.3px; word-break: break-word; }
+    .item-status { font-size: 0.8125rem; font-weight: 600; }
+    .status-ok { color: var(--ok); } .status-low { color: var(--low); } .status-empty { color: var(--empty); }
+    .item-actions { display: flex; align-items: center; gap: 6px; }
+    .qty-btn, .btn-quick-spesa {
+      position: relative; width: 36px; height: 36px; border-radius: 50%; border: none;
+      background: var(--field); color: var(--text-main); font-size: 1.25rem; font-weight: 500; line-height: 1;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      transition: transform 0.35s var(--spring);
     }
+    .qty-btn::after, .btn-quick-spesa::after { content: ""; position: absolute; inset: -4px; } /* area tocco 44pt */
+    .qty-btn:active, .btn-quick-spesa:active { transform: scale(0.86); transition-duration: 0.1s; }
+    .btn-quick-spesa { color: var(--tint-blue); }
+    .ico { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .qty-btn .ico { width: 14px; height: 14px; }
+    .qty-value { font-size: 1.0625rem; font-weight: 600; min-width: 24px; text-align: center; font-variant-numeric: tabular-nums; }
 
-    .item-name {
-      font-size: 16px;
-      font-weight: 600;
-      letter-spacing: -0.2px;
-      word-break: break-word;
-    }
-
-    .item-status {
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-    .status-ok { color: var(--tint-green); }
-    .status-low { color: var(--tint-orange); }
-    .status-empty { color: var(--tint-red); }
-
-    .item-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .qty-btn {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      border: none;
-      background: #EFEFF4;
-      color: var(--text-main);
-      font-size: 18px;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-
-    .qty-btn:active {
-      background: #E5E5EA;
-    }
-
-    .qty-value {
-      font-size: 16px;
-      font-weight: 600;
-      min-width: 26px;
-      text-align: center;
-    }
-
-    .btn-quick-spesa {
-      background: none;
-      border: none;
-      font-size: 21px;
-      padding: 6px;
-      cursor: pointer;
-      opacity: 0.85;
-    }
-
-    /* Sezione Spesa & Swipe to Dismiss */
-    .spesa-controls {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-
+    /* ---------- Spesa & swipe ---------- */
+    .spesa-controls { display: flex; gap: 10px; margin-bottom: 14px; }
     .btn-secondary {
-      flex: 1;
-      padding: 12px 10px;
-      border-radius: 12px;
-      background: var(--card-solid);
-      border: 1px solid #E5E5EA;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      text-align: center;
+      flex: 1; min-height: 44px; padding: 0 12px; border: none; border-radius: 999px;
+      font-size: 0.9375rem; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      transition: transform 0.35s var(--spring);
     }
-
-    .btn-secondary:active {
-      background: #EFEFF4;
-    }
-
+    .btn-secondary:active { transform: scale(0.95); transition-duration: 0.1s; }
+    .swipe-hint { font-size: 0.8125rem; color: var(--text-muted); margin: 0 0 10px 6px; }
     .swipe-container {
-      position: relative;
-      overflow: hidden;
-      border-radius: 18px;
-      margin-bottom: 10px;
-      touch-action: pan-y;
-      background: var(--tint-red);
+      position: relative; overflow: hidden; border-radius: 22px; margin-bottom: 10px;
+      touch-action: pan-y; background: var(--tint-red);
       transition: height 0.28s ease, margin 0.28s ease, opacity 0.28s ease;
     }
-
-    .swipe-container.collapsed {
-      height: 0 !important;
-      margin-bottom: 0 !important;
-      opacity: 0;
-    }
-
+    .swipe-container.collapsed { height: 0 !important; margin-bottom: 0 !important; opacity: 0; }
     .swipe-action-bg {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      right: 0;
-      width: 90px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 14px;
-      font-weight: 600;
-      gap: 4px;
-      cursor: pointer;
-      background: var(--tint-red);
+      position: absolute; top: 0; bottom: 0; right: 0; width: 90px;
+      display: flex; align-items: center; justify-content: center; gap: 4px;
+      color: #fff; font-size: 0.875rem; font-weight: 600; cursor: pointer; background: var(--tint-red);
     }
-
     .spesa-item {
-      position: relative;
-      background: var(--card-solid);
-      border-radius: 18px;
-      padding: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transform: translateX(0px);
-      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
-      z-index: 2;
+      position: relative; z-index: 2; min-height: 60px; padding: 12px 16px; border-radius: 22px;
+      background: linear-gradient(var(--row), var(--row)), var(--row-solid);
+      box-shadow: inset 0 1px 0 var(--hi), inset 0 0 0 0.5px var(--lo);
+      display: flex; align-items: center; justify-content: space-between;
+      transform: translateX(0); transition: transform 0.3s var(--spring), opacity 0.2s ease;
     }
-
-    .spesa-item.swiping {
-      transition: none;
-    }
-
-    .spesa-item.checked {
-      opacity: 0.55;
-    }
-
-    .spesa-item.checked span.spesa-text {
-      text-decoration: line-through;
-      color: var(--text-muted);
-    }
-
+    .spesa-item.swiping { transition: none; }
+    .spesa-item.checked { opacity: 0.6; }
+    .spesa-item.checked .spesa-text { text-decoration: line-through; color: var(--text-muted); }
+    .spesa-text { font-size: 1.0625rem; letter-spacing: -0.3px; }
     .checkbox {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      border: 2px solid #E5E5EA;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      margin-right: 12px;
-      flex-shrink: 0;
-      transition: background-color 0.15s ease, border-color 0.15s ease;
-    }
-
-    .spesa-item.checked .checkbox {
-      background: var(--tint-green);
-      border-color: var(--tint-green);
-      color: white;
-      font-size: 13px;
-    }
-
-    .category-tag {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 8px;
-      background: #EFEFF4;
-      color: var(--text-muted);
-      margin-left: 8px;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 45px 20px;
-      color: var(--text-muted);
-      font-size: 15px;
-      line-height: 1.5;
-    }
-
-    /* Floating Liquid Glass Bottom Navigation Bar */
-    nav.liquid-glass-nav {
-      position: fixed;
-      bottom: calc(var(--safe-bottom) + 12px);
-      left: 20px;
-      right: 20px;
-      height: 64px;
-      border-radius: 36px;
-      background: rgba(255, 255, 255, 0.65);
-      backdrop-filter: blur(28px) saturate(190%);
-      -webkit-backdrop-filter: blur(28px) saturate(190%);
-      border: 1px solid var(--border-glass);
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12), inset 0 1px 1.5px rgba(255, 255, 255, 0.9);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      z-index: 100;
-      padding: 0 10px;
-    }
-
-    .nav-tab {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
+      width: 26px; height: 26px; border-radius: 50%; margin-right: 12px; flex-shrink: 0;
+      border: 1.5px solid var(--text-muted); cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: background-color 0.2s, border-color 0.2s, transform 0.35s var(--spring);
       position: relative;
-      flex: 1;
-      height: 100%;
-      justify-content: center;
-      transition: color 0.15s ease, transform 0.12s ease;
     }
+    .checkbox::after { content: ""; position: absolute; inset: -9px; } /* area tocco 44pt */
+    .spesa-item.checked .checkbox { background: var(--tint-green); border-color: var(--tint-green); color: #fff; font-size: 0.8125rem; font-weight: 700; }
+    .category-tag { font-size: 0.75rem; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: var(--field); color: var(--text-muted); margin-left: 8px; }
+    .empty-state { text-align: center; padding: 48px 20px; color: var(--text-muted); font-size: 0.9375rem; line-height: 1.45; }
 
-    .nav-tab.active {
-      color: var(--tint-blue);
+    /* ---------- Tab bar fluttuante con lente ---------- */
+    nav.liquid-glass-nav {
+      position: fixed; left: 20px; right: 20px; bottom: calc(var(--safe-bottom) + 10px);
+      height: 66px; border-radius: 999px; padding: 5px; z-index: 100;
+      display: flex; align-items: center;
     }
-
-    .nav-tab:active {
-      transform: scale(0.92);
+    .lens {
+      position: absolute; top: 5px; bottom: 5px; left: 5px; width: calc(50% - 5px); border-radius: 999px;
+      background: rgba(120, 120, 128, 0.2);
+      box-shadow: inset 0 1px 0 var(--hi), inset 0 0 0 0.5px var(--hi), 0 3px 10px -3px var(--shadow);
+      transition: transform 0.55s var(--spring);
     }
-
-    .nav-tab svg {
-      width: 23px;
-      height: 23px;
-      fill: currentColor;
+    @supports (background: color-mix(in srgb, red 10%, blue)) {
+      .lens { background: color-mix(in srgb, var(--tint-blue) 16%, var(--glass-strong)); }
     }
-
+    nav.liquid-glass-nav:has(#tab-spesa.active) .lens { transform: translateX(100%); }
+    @supports not selector(:has(*)) {
+      .lens { display: none; }
+      .nav-tab.active { background: rgba(120, 120, 128, 0.2); border-radius: 999px; }
+    }
+    .nav-tab {
+      position: relative; z-index: 1; flex: 1; height: 100%; background: none; border: none;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+      color: var(--text-muted); font-size: 0.6875rem; font-weight: 600; cursor: pointer;
+      transition: color 0.25s ease, transform 0.35s var(--spring);
+    }
+    .nav-tab.active { color: var(--tint-blue); }
+    .nav-tab:active { transform: scale(0.93); transition-duration: 0.1s; }
+    .nav-tab svg { width: 24px; height: 24px; fill: currentColor; }
     .badge {
-      position: absolute;
-      top: 8px;
-      right: 28%;
-      background: var(--tint-red);
-      color: white;
-      font-size: 10px;
-      font-weight: 700;
-      border-radius: 10px;
-      padding: 1px 5px;
-      min-width: 16px;
-      text-align: center;
+      position: absolute; top: 5px; left: calc(50% + 8px);
+      background: var(--tint-red); color: #fff; font-size: 0.6875rem; font-weight: 700;
+      border-radius: 999px; padding: 1px 6px; min-width: 18px; text-align: center;
     }
 
-    /* Modali iOS */
+    /* ---------- Alert / sheet in vetro ---------- */
     .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.45);
-      z-index: 200;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      animation: modalFadeIn 0.2s ease;
+      position: fixed; inset: 0; z-index: 200; display: none; align-items: center; justify-content: center;
+      padding: 20px; background: rgba(0, 0, 0, 0.3); animation: fadeIn 0.25s ease;
     }
-
-    .modal-overlay.active {
-      display: flex;
-    }
-
-    @keyframes modalFadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
+    .modal-overlay.active { display: flex; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     .modal-box {
-      background: var(--card-solid);
-      border-radius: 24px;
-      padding: 22px 20px;
-      width: 100%;
-      max-width: 330px;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
+      width: 100%; max-width: 340px; border-radius: 36px; padding: 24px 20px 20px;
+      background: var(--glass-strong); display: flex; flex-direction: column; gap: 14px;
+      animation: popIn 0.5s var(--spring);
     }
-
-    .modal-title {
-      font-size: 18px;
-      font-weight: 700;
-      text-align: center;
-      letter-spacing: -0.3px;
-    }
-
-    .modal-field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .modal-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 6px;
-    }
-
+    @keyframes popIn { from { opacity: 0; transform: scale(0.88); } to { opacity: 1; transform: none; } }
+    .modal-title { font-size: 1.0625rem; font-weight: 600; text-align: center; letter-spacing: -0.3px; }
+    .modal-field { display: flex; flex-direction: column; gap: 6px; }
+    .modal-label { font-size: 0.8125rem; font-weight: 500; color: var(--text-muted); padding-left: 8px; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 4px; }
     .btn-modal {
-      flex: 1;
-      padding: 12px;
-      border-radius: 12px;
-      font-size: 15px;
-      font-weight: 600;
-      border: none;
-      cursor: pointer;
-      transition: opacity 0.12s ease;
+      flex: 1; min-height: 50px; border-radius: 999px; font-size: 1.0625rem; font-weight: 600;
+      border: none; cursor: pointer; transition: transform 0.35s var(--spring);
     }
-
-    .btn-modal:active {
-      opacity: 0.75;
-    }
-
-    .btn-modal-cancel {
-      background: #E5E5EA;
-      color: var(--text-main);
-    }
-
-    .btn-modal-save {
-      background: var(--tint-blue);
-      color: white;
-    }
-
+    .btn-modal:active { transform: scale(0.96); transition-duration: 0.1s; }
+    .btn-modal-cancel { background: var(--field); color: var(--text-main); }
     .btn-modal-delete {
-      width: 100%;
-      background: #FFEBEA;
-      color: var(--tint-red);
-      border: 1px solid rgba(255, 59, 48, 0.25);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+      width: 100%; background: rgba(255, 59, 48, 0.14); color: var(--tint-red);
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+
+    :is(button, input):focus-visible { outline: 3px solid rgba(0, 122, 255, 0.55); outline-offset: 2px; }
+    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      :root { --glass: var(--row-solid); --glass-strong: var(--row-solid); }
+    }
+    @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+      :root { --glass: var(--row-solid); --glass-strong: var(--row-solid); --row: var(--row-solid); }
+      * { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Header Navigazione Solido -->
+  <!-- Header con scroll-edge effect -->
   <header>
     <div class="header-left">
       <button id="btn-header-back" class="btn-circle-glass" style="display: none;" onclick="showHome()" aria-label="Torna indietro">
@@ -710,7 +400,7 @@
           <input type="text" id="input-item-name" class="input-name" placeholder="Aggiungi articolo (es. Latte)" autocomplete="off">
           <input type="number" id="input-item-qty" class="input-qty" value="1" min="0">
         </div>
-        <button class="btn-add" onclick="addItem()">+ Aggiungi a Scorte</button>
+        <button class="btn-add" onclick="addItem()">Aggiungi alle scorte</button>
       </div>
 
       <div id="category-items-container" class="item-list">
@@ -722,23 +412,21 @@
     <div id="view-spesa" class="view">
       <div class="spesa-controls">
         <button class="btn-secondary" onclick="autoPopulateSpesa()">
-          ⚡ Carica esauriti
+          <svg class="ico" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg> Carica esauriti
         </button>
         <button class="btn-secondary" style="color: var(--tint-red);" onclick="clearPurchasedSpesa()">
-          🗑 Rimuovi fatti
+          <svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg> Rimuovi fatti
         </button>
       </div>
 
       <div class="add-form-card">
         <div class="form-row">
           <input type="text" id="input-spesa-manual" class="input-name" placeholder="Aggiungi alla lista spesa..." autocomplete="off">
-          <button class="btn-add" style="padding: 0 18px;" onclick="addManualSpesa()">+</button>
+          <button class="btn-add" style="padding: 0 20px; font-size: 1.5rem; font-weight: 400;" aria-label="Aggiungi" onclick="addManualSpesa()">+</button>
         </div>
       </div>
 
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; padding-left: 4px;">
-        💡 Scorri a sinistra su un prodotto per eliminarlo
-      </p>
+      <p class="swipe-hint">Scorri a sinistra su un prodotto per eliminarlo</p>
 
       <div id="spesa-items-container" class="item-list">
         <!-- Swipe gestures -->
@@ -782,7 +470,7 @@
       </div>
       <div style="border-top: 0.5px solid rgba(0, 0, 0, 0.1); margin-top: 4px; padding-top: 10px;">
         <button class="btn-modal btn-modal-delete" onclick="deleteCurrentCategory()">
-          <span>🗑</span> Elimina Categoria
+          <svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg> Elimina categoria
         </button>
       </div>
     </div>
@@ -809,6 +497,7 @@
 
   <!-- Floating Liquid Glass Bottom Navigation Bar -->
   <nav class="liquid-glass-nav">
+    <span class="lens" aria-hidden="true"></span>
     <button class="nav-tab active" id="tab-home" onclick="switchToTab('home')">
       <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
       Scorte
@@ -822,7 +511,9 @@
 
   <script>
     /* ==========================================================
-       1. CONFIGURAZIONE FIREBASE CONDIVISA
+       1. CONFIGURAZIONE FIREBASE CONDIVISA (Gratuita)
+       Sostituisci questi parametri con quelli del tuo progetto
+       Firebase (vedi capitolo 3 per la procedura rapida).
     ========================================================== */
     const firebaseConfig = {
       apiKey: "AIzaSyDhtvjCZstnA0zAFeNZJHRRvFHxiGznrqk",
@@ -1032,7 +723,7 @@
         const tile = document.createElement("div");
         tile.className = "tile-card";
         if (cat.color) {
-          tile.style.borderTopColor = cat.color;
+          tile.style.setProperty('--tint', cat.color);
         }
         tile.onclick = () => openCategory(catKey);
 
@@ -1099,7 +790,7 @@
         document.getElementById("tab-home").classList.remove("active");
         document.getElementById("tab-spesa").classList.add("active");
 
-        document.getElementById("header-title").textContent = "🛒 Lista Spesa";
+        document.getElementById("header-title").textContent = "Lista Spesa";
         document.getElementById("btn-header-back").style.display = "none";
         document.getElementById("btn-header-settings").style.display = "none";
         renderSpesaItems();
@@ -1246,11 +937,11 @@
             <span class="item-status ${statusClass}">${statusText}</span>
           </div>
           <div class="item-actions">
-            <button class="btn-quick-spesa" title="Aggiungi a spesa" onclick="addSingleToSpesa('${escapeHtml(item.name)}', '${currentCategory}')">🛒</button>
-            <button class="qty-btn" onclick="updateQty('${item.id}', -1)">−</button>
+            <button class="btn-quick-spesa" title="Aggiungi a spesa" aria-label="Aggiungi alla spesa" onclick="addSingleToSpesa('${escapeHtml(item.name)}', '${currentCategory}')"><svg class="ico" viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.2"/><circle cx="18" cy="20" r="1.2"/><path d="M2 3h3l2.7 12.4a1 1 0 0 0 1 .8h8.8a1 1 0 0 0 1-.8L20.5 7H6"/></svg></button>
+            <button class="qty-btn" aria-label="Diminuisci" onclick="updateQty('${item.id}', -1)">−</button>
             <span class="qty-value">${item.qty}</span>
-            <button class="qty-btn" onclick="updateQty('${item.id}', 1)">+</button>
-            <button class="qty-btn" style="color: var(--tint-red); font-size:14px; margin-left: 2px;" onclick="deleteItem('${item.id}')">✕</button>
+            <button class="qty-btn" aria-label="Aumenta" onclick="updateQty('${item.id}', 1)">+</button>
+            <button class="qty-btn" style="color: var(--tint-red); margin-left: 2px;" aria-label="Elimina articolo" onclick="deleteItem('${item.id}')"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
           </div>
         `;
         container.appendChild(div);
@@ -1323,7 +1014,7 @@
 
         swipeContainer.innerHTML = `
           <div class="swipe-action-bg" onclick="dismissSpesaItem('${item.id}')">
-            <span>🗑</span> Elimina
+            <svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg> Elimina
           </div>
           <div class="spesa-item ${item.done ? 'checked' : ''}" id="item-${item.id}">
             <div style="display: flex; align-items: center; flex: 1;">
