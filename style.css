@@ -124,10 +124,7 @@ header h1 {
   transition: transform 0.35s var(--spring);
 }
 .btn-circle-glass:active { transform: scale(0.9); transition-duration: 0.1s; }
-.btn-circle-glass svg {
-  width: 20px; height: 20px; stroke: currentColor; stroke-width: 2;
-  stroke-linecap: round; stroke-linejoin: round; fill: none;
-}
+.btn-circle-glass svg { width: 22px; height: 22px; fill: currentColor; }
 .sync-indicator {
   position: absolute; top: 7px; right: 7px; width: 10px; height: 10px; border-radius: 50%;
   background: #AEAEB2; border: 2px solid var(--base);
@@ -211,8 +208,8 @@ input:focus { box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.35); background: var(--g
 .qty-btn::after, .btn-quick-spesa::after { content: ""; position: absolute; inset: -4px; } /* area tocco 44pt */
 .qty-btn:active, .btn-quick-spesa:active { transform: scale(0.86); transition-duration: 0.1s; }
 .btn-quick-spesa { color: var(--tint-blue); }
-.ico { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
-.qty-btn .ico { width: 14px; height: 14px; }
+.ico { width: 18px; height: 18px; fill: currentColor; flex-shrink: 0; }
+.qty-btn .ico { width: 16px; height: 16px; }
 .qty-value { font-size: 1.0625rem; font-weight: 600; min-width: 24px; text-align: center; font-variant-numeric: tabular-nums; }
 
 /* ---------- Spesa & swipe ---------- */
@@ -273,7 +270,7 @@ nav.liquid-glass-nav {
   color: var(--tint-blue); cursor: pointer; display: grid; place-items: center;
   transition: transform 0.4s var(--spring);
 }
-.dock-add svg { width: 26px; height: 26px; }
+.dock-add svg { width: 30px; height: 30px; fill: currentColor; }
 .dock-add:active { transform: scale(0.9); transition-duration: 0.1s; }
 .lens {
   position: absolute; top: 5px; bottom: 5px; left: 5px; width: calc(50% - 5px); border-radius: 999px;
@@ -346,9 +343,9 @@ nav.liquid-glass-nav:has(#tab-spesa.active) .lens { transform: translateX(100%);
 
 /* ---------- Utility (ex stili inline) ---------- */
 [hidden] { display: none !important; }
-.chevron-back { margin-left: -2px; }
 .btn-secondary.danger { color: var(--tint-red); }
-.btn-plus { padding: 0 20px; font-size: 1.5rem; font-weight: 400; }
+.btn-plus { padding: 0 20px; }
+.btn-plus .ico { width: 24px; height: 24px; }
 .modal-note { font-size: 0.8125rem; color: var(--text-muted); text-align: center; line-height: 1.4; }
 .input-code { text-align: center; font-weight: 700; text-transform: uppercase; }
 .input-emoji { text-align: center; font-size: 1.25rem; }
@@ -449,7 +446,14 @@ input[aria-invalid="true"] { box-shadow: 0 0 0 2px var(--tint-red); }
 .modal-actions .btn-modal-delete { width: auto; }
 
 /* "+" di Nuova categoria: solo il simbolo, senza cerchio */
-.tile-add-new .plus-circle {
-  background: none; box-shadow: none; width: auto; height: 54px;
-  font-size: 3rem; font-weight: 300; line-height: 1;
-}
+.tile-add-new .plus-circle { background: none; box-shadow: none; width: auto; height: 54px; }
+.plus-circle svg { width: 48px; height: 48px; fill: currentColor; }
+
+/* ---------- Icone (sprite StrataKit) ---------- */
+.sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+.welcome-icon { color: var(--tint-blue); }
+.welcome-icon svg { width: 40px; height: 40px; fill: currentColor; }
+.checkbox .ico { width: 16px; height: 16px; }
+.spesa-chevron { display: flex; }
+.spesa-chevron .ico { width: 16px; height: 16px; }
+.input-caps { text-transform: uppercase; }
