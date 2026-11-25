@@ -19,350 +19,15 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-  <style>
-    /* ==========================================================
-       LIQUID GLASS — Apple HIG
-       Glass sul livello dei controlli (header, tab bar, tile, sheet),
-       materiali più sobri sui contenuti (righe lista).
-    ========================================================== */
-    :root {
-      color-scheme: light dark;
-      --tint-blue: #007AFF; --tint-red: #FF3B30; --tint-green: #34C759;
-      --tint-orange: #FF9500; --tint-purple: #AF52DE;
-      --text-main: #1C1C1E;
-      --text-muted: rgba(60, 60, 67, 0.62);
-      --ok: #1E8E3E; --low: #B25E00; --empty: #D70015;
-      --base: #EDF0F7;
-      --edge: rgba(237, 240, 247, 0.55);
-      --glass: rgba(255, 255, 255, 0.42);
-      --glass-strong: rgba(255, 255, 255, 0.7);
-      --row: rgba(255, 255, 255, 0.6);
-      --row-solid: #F6F7FB;
-      --field: rgba(120, 120, 128, 0.12);
-      --hi: rgba(255, 255, 255, 0.85);
-      --lo: rgba(0, 0, 0, 0.06);
-      --rim-a: rgba(255, 255, 255, 0.95);
-      --rim-b: rgba(255, 255, 255, 0.08);
-      --shadow: rgba(31, 45, 90, 0.16);
-      --blob1: #8DB8FF; --blob2: #9FE8D0; --blob3: #FFCFA3;
-      --safe-top: env(safe-area-inset-top, 0px);
-      --safe-bottom: env(safe-area-inset-bottom, 0px);
-      --spring: cubic-bezier(0.34, 1.45, 0.64, 1);
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --tint-blue: #0A84FF; --tint-red: #FF453A; --tint-green: #30D158;
-        --tint-orange: #FF9F0A; --tint-purple: #BF5AF2;
-        --text-main: #F5F5F7;
-        --text-muted: rgba(235, 235, 245, 0.6);
-        --ok: #32D74B; --low: #FFB340; --empty: #FF6961;
-        --base: #05070D;
-        --edge: rgba(5, 7, 13, 0.55);
-        --glass: rgba(44, 48, 64, 0.4);
-        --glass-strong: rgba(34, 38, 52, 0.74);
-        --row: rgba(62, 66, 84, 0.36);
-        --row-solid: #1A1D28;
-        --field: rgba(120, 120, 128, 0.24);
-        --hi: rgba(255, 255, 255, 0.18);
-        --lo: rgba(0, 0, 0, 0.4);
-        --rim-a: rgba(255, 255, 255, 0.38);
-        --rim-b: rgba(255, 255, 255, 0.03);
-        --shadow: rgba(0, 0, 0, 0.55);
-        --blob1: #1B3F8F; --blob2: #0F5C55; --blob3: #6B3A1F;
-      }
-    }
-    * {
-      box-sizing: border-box; margin: 0; padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-    html {
-      background: var(--base);
-      font: 17px/1.3 -apple-system, system-ui, "SF Pro Text", "Helvetica Neue", sans-serif;
-      font: -apple-system-body; /* Dynamic Type su iOS */
-      -webkit-text-size-adjust: 100%;
-    }
-    button, input { font: inherit; color: inherit; }
-    body {
-      color: var(--text-main);
-      padding-bottom: calc(var(--safe-bottom) + 104px);
-      min-height: 100vh;
-      display: flex; flex-direction: column;
-      -webkit-user-select: none; user-select: none;
-      overflow-x: hidden;
-    }
-    input { -webkit-user-select: text; user-select: text; }
-    /* Sfondo ambientale: dà materia da rifrangere al vetro */
-    body::before {
-      content: ""; position: fixed; inset: 0; z-index: -1;
-      background:
-        radial-gradient(60% 40% at 12% 6%, var(--blob1), transparent 70%),
-        radial-gradient(55% 40% at 98% 40%, var(--blob2), transparent 70%),
-        radial-gradient(60% 45% at 18% 100%, var(--blob3), transparent 70%),
-        var(--base);
-    }
-
-    /* ---------- Materiale Liquid Glass ---------- */
-    :is(.btn-circle-glass, nav.liquid-glass-nav, .tile-card, .add-form-card, .btn-secondary, .modal-box) {
-      position: relative; isolation: isolate;
-      background: var(--glass);
-      -webkit-backdrop-filter: blur(22px) saturate(180%);
-      backdrop-filter: blur(22px) saturate(180%);
-      box-shadow: inset 0 1px 0 var(--hi), inset 0 -1px 0 var(--lo), 0 10px 30px -10px var(--shadow);
-    }
-    /* Bordo speculare che cattura la luce */
-    :is(.btn-circle-glass, nav.liquid-glass-nav, .tile-card, .add-form-card, .btn-secondary, .modal-box)::before {
-      content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
-      pointer-events: none;
-      background: linear-gradient(140deg, var(--rim-a), var(--rim-b) 35%, var(--rim-b) 65%, var(--rim-a));
-      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor; mask-composite: exclude;
-    }
-
-    /* ---------- Header con scroll-edge effect ---------- */
-    header {
-      position: sticky; top: 0; z-index: 50;
-      display: flex; align-items: center; gap: 8px;
-      padding: calc(var(--safe-top) + 6px) 16px 6px;
-      min-height: calc(var(--safe-top) + 58px);
-    }
-    header::before {
-      content: ""; position: absolute; inset: 0 0 -20px; z-index: -1; pointer-events: none;
-      background: linear-gradient(var(--edge), transparent);
-      -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
-      -webkit-mask-image: linear-gradient(#000 55%, transparent);
-      mask-image: linear-gradient(#000 55%, transparent);
-    }
-    .header-left, .header-right { display: flex; align-items: center; gap: 8px; min-width: 96px; }
-    .header-right { justify-content: flex-end; }
-    header h1 {
-      flex: 1; text-align: center; font-size: 1rem; font-weight: 600; letter-spacing: -0.2px;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .btn-circle-glass {
-      width: 44px; height: 44px; border-radius: 50%; border: none;
-      color: var(--text-main); cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: transform 0.35s var(--spring);
-    }
-    .btn-circle-glass:active { transform: scale(0.9); transition-duration: 0.1s; }
-    .btn-circle-glass svg {
-      width: 20px; height: 20px; stroke: currentColor; stroke-width: 2;
-      stroke-linecap: round; stroke-linejoin: round; fill: none;
-    }
-    .sync-indicator {
-      position: absolute; top: 7px; right: 7px; width: 10px; height: 10px; border-radius: 50%;
-      background: #AEAEB2; border: 2px solid var(--base);
-    }
-    .sync-indicator.online { background: var(--tint-green); }
-    .sync-indicator.syncing { background: var(--tint-orange); }
-
-    main { padding: 6px 20px 14px; flex: 1; }
-    .view { display: none; }
-    .view.active { display: block; animation: viewIn 0.4s var(--spring); }
-    @keyframes viewIn { from { opacity: 0; transform: translateY(8px) scale(0.99); } to { opacity: 1; transform: none; } }
-
-    /* ---------- Tile Home ---------- */
-    .tiles-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
-    .tile-card {
-      --tint: var(--tint-blue);
-      border-radius: 30px; padding: 16px; min-height: 160px;
-      display: flex; flex-direction: column; justify-content: space-between;
-      cursor: pointer;
-      transition: transform 0.4s var(--spring);
-    }
-    @supports (background: color-mix(in srgb, red 10%, blue)) {
-      .tile-card { background: radial-gradient(120% 90% at 0% 0%, color-mix(in srgb, var(--tint) 30%, transparent), transparent 62%), var(--glass); }
-    }
-    .tile-card:active { transform: scale(0.95); transition-duration: 0.1s; }
-    .tile-icon, .plus-circle {
-      width: 54px; height: 54px; border-radius: 50%;
-      display: grid; place-items: center; font-size: 28px; line-height: 1;
-      background: rgba(255, 255, 255, 0.35);
-      box-shadow: inset 0 1px 0 var(--hi), inset 0 -1px 0 var(--lo);
-    }
-    @supports (background: color-mix(in srgb, red 10%, blue)) {
-      .tile-icon, .plus-circle { background: color-mix(in srgb, var(--tint) 22%, transparent); }
-    }
-    .tile-title { font-size: 1.0625rem; font-weight: 600; letter-spacing: -0.3px; word-break: break-word; }
-    .tile-count { font-size: 0.8125rem; color: var(--text-muted); margin-top: 2px; font-weight: 500; }
-    .tile-card.tile-add-new { align-items: center; justify-content: center; text-align: center; gap: 10px; }
-    .plus-circle { color: var(--tint-blue); font-size: 30px; font-weight: 300; }
-    .tile-add-new .tile-title { color: var(--tint-blue); font-size: 0.9375rem; }
-
-    /* ---------- Form ---------- */
-    .add-form-card { border-radius: 28px; padding: 14px; margin-bottom: 18px; display: flex; flex-direction: column; gap: 10px; }
-    .form-row { display: flex; gap: 10px; }
-    input {
-      background: var(--field); border: none; padding: 0 16px; min-height: 48px;
-      border-radius: 24px; font-size: 1.0625rem; color: var(--text-main); outline: none;
-      -webkit-appearance: none; appearance: none; min-width: 0;
-      transition: box-shadow 0.2s, background-color 0.2s;
-    }
-    input::placeholder { color: var(--text-muted); }
-    input:focus { box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.35); background: var(--glass-strong); }
-    .input-name { flex: 3; }
-    .input-qty { width: 76px; text-align: center; }
-    .btn-add, .btn-modal-save {
-      background: var(--tint-blue); color: #fff; border: none; border-radius: 999px;
-      min-height: 50px; padding: 0 20px; font-size: 1.0625rem; font-weight: 600; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -1px 0 rgba(0, 0, 0, 0.12), 0 8px 18px -6px rgba(0, 122, 255, 0.55);
-      transition: transform 0.35s var(--spring);
-    }
-    .btn-add:active, .btn-modal-save:active { transform: scale(0.96); transition-duration: 0.1s; }
-
-    /* ---------- Righe lista (livello contenuti) ---------- */
-    .item-list { display: flex; flex-direction: column; gap: 10px; }
-    .item-card {
-      background: var(--row); border-radius: 22px; padding: 10px 12px 10px 16px; min-height: 64px;
-      display: flex; align-items: center; justify-content: space-between;
-      box-shadow: inset 0 1px 0 var(--hi), inset 0 0 0 0.5px var(--lo), 0 6px 18px -10px var(--shadow);
-    }
-    .item-info { display: flex; flex-direction: column; gap: 2px; flex: 1; margin-right: 8px; min-width: 0; }
-    .item-name { font-size: 1.0625rem; font-weight: 600; letter-spacing: -0.3px; word-break: break-word; }
-    .item-status { font-size: 0.8125rem; font-weight: 600; }
-    .status-ok { color: var(--ok); } .status-low { color: var(--low); } .status-empty { color: var(--empty); }
-    .item-actions { display: flex; align-items: center; gap: 6px; }
-    .qty-btn, .btn-quick-spesa {
-      position: relative; width: 36px; height: 36px; border-radius: 50%; border: none;
-      background: var(--field); color: var(--text-main); font-size: 1.25rem; font-weight: 500; line-height: 1;
-      display: flex; align-items: center; justify-content: center; cursor: pointer;
-      transition: transform 0.35s var(--spring);
-    }
-    .qty-btn::after, .btn-quick-spesa::after { content: ""; position: absolute; inset: -4px; } /* area tocco 44pt */
-    .qty-btn:active, .btn-quick-spesa:active { transform: scale(0.86); transition-duration: 0.1s; }
-    .btn-quick-spesa { color: var(--tint-blue); }
-    .ico { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
-    .qty-btn .ico { width: 14px; height: 14px; }
-    .qty-value { font-size: 1.0625rem; font-weight: 600; min-width: 24px; text-align: center; font-variant-numeric: tabular-nums; }
-
-    /* ---------- Spesa & swipe ---------- */
-    .spesa-controls { display: flex; gap: 10px; margin-bottom: 14px; }
-    .btn-secondary {
-      flex: 1; min-height: 44px; padding: 0 12px; border: none; border-radius: 999px;
-      font-size: 0.9375rem; font-weight: 600; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 7px;
-      transition: transform 0.35s var(--spring);
-    }
-    .btn-secondary:active { transform: scale(0.95); transition-duration: 0.1s; }
-    .swipe-hint { font-size: 0.8125rem; color: var(--text-muted); margin: 0 0 10px 6px; }
-    .swipe-container {
-      position: relative; overflow: hidden; border-radius: 22px; margin-bottom: 10px;
-      touch-action: pan-y; background: var(--tint-red);
-      transition: height 0.28s ease, margin 0.28s ease, opacity 0.28s ease;
-    }
-    .swipe-container.collapsed { height: 0 !important; margin-bottom: 0 !important; opacity: 0; }
-    .swipe-action-bg {
-      position: absolute; top: 0; bottom: 0; right: 0; width: 90px;
-      display: flex; align-items: center; justify-content: center; gap: 4px;
-      color: #fff; font-size: 0.875rem; font-weight: 600; cursor: pointer; background: var(--tint-red);
-    }
-    .spesa-item {
-      position: relative; z-index: 2; min-height: 60px; padding: 12px 16px; border-radius: 22px;
-      background: linear-gradient(var(--row), var(--row)), var(--row-solid);
-      box-shadow: inset 0 1px 0 var(--hi), inset 0 0 0 0.5px var(--lo);
-      display: flex; align-items: center; justify-content: space-between;
-      transform: translateX(0); transition: transform 0.3s var(--spring), opacity 0.2s ease;
-    }
-    .spesa-item.swiping { transition: none; }
-    .spesa-item.checked { opacity: 0.6; }
-    .spesa-item.checked .spesa-text { text-decoration: line-through; color: var(--text-muted); }
-    .spesa-text { font-size: 1.0625rem; letter-spacing: -0.3px; }
-    .checkbox {
-      width: 26px; height: 26px; border-radius: 50%; margin-right: 12px; flex-shrink: 0;
-      border: 1.5px solid var(--text-muted); cursor: pointer;
-      display: inline-flex; align-items: center; justify-content: center;
-      transition: background-color 0.2s, border-color 0.2s, transform 0.35s var(--spring);
-      position: relative;
-    }
-    .checkbox::after { content: ""; position: absolute; inset: -9px; } /* area tocco 44pt */
-    .spesa-item.checked .checkbox { background: var(--tint-green); border-color: var(--tint-green); color: #fff; font-size: 0.8125rem; font-weight: 700; }
-    .category-tag { font-size: 0.75rem; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: var(--field); color: var(--text-muted); margin-left: 8px; }
-    .empty-state { text-align: center; padding: 48px 20px; color: var(--text-muted); font-size: 0.9375rem; line-height: 1.45; }
-
-    /* ---------- Tab bar fluttuante con lente ---------- */
-    nav.liquid-glass-nav {
-      position: fixed; left: 20px; right: 20px; bottom: calc(var(--safe-bottom) + 10px);
-      height: 66px; border-radius: 999px; padding: 5px; z-index: 100;
-      display: flex; align-items: center;
-    }
-    .lens {
-      position: absolute; top: 5px; bottom: 5px; left: 5px; width: calc(50% - 5px); border-radius: 999px;
-      background: rgba(120, 120, 128, 0.2);
-      box-shadow: inset 0 1px 0 var(--hi), inset 0 0 0 0.5px var(--hi), 0 3px 10px -3px var(--shadow);
-      transition: transform 0.55s var(--spring);
-    }
-    @supports (background: color-mix(in srgb, red 10%, blue)) {
-      .lens { background: color-mix(in srgb, var(--tint-blue) 16%, var(--glass-strong)); }
-    }
-    nav.liquid-glass-nav:has(#tab-spesa.active) .lens { transform: translateX(100%); }
-    @supports not selector(:has(*)) {
-      .lens { display: none; }
-      .nav-tab.active { background: rgba(120, 120, 128, 0.2); border-radius: 999px; }
-    }
-    .nav-tab {
-      position: relative; z-index: 1; flex: 1; height: 100%; background: none; border: none;
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-      color: var(--text-muted); font-size: 0.6875rem; font-weight: 600; cursor: pointer;
-      transition: color 0.25s ease, transform 0.35s var(--spring);
-    }
-    .nav-tab.active { color: var(--tint-blue); }
-    .nav-tab:active { transform: scale(0.93); transition-duration: 0.1s; }
-    .nav-tab svg { width: 24px; height: 24px; fill: currentColor; }
-    .badge {
-      position: absolute; top: 5px; left: calc(50% + 8px);
-      background: var(--tint-red); color: #fff; font-size: 0.6875rem; font-weight: 700;
-      border-radius: 999px; padding: 1px 6px; min-width: 18px; text-align: center;
-    }
-
-    /* ---------- Alert / sheet in vetro ---------- */
-    .modal-overlay {
-      position: fixed; inset: 0; z-index: 200; display: none; align-items: center; justify-content: center;
-      padding: 20px; background: rgba(0, 0, 0, 0.3); animation: fadeIn 0.25s ease;
-    }
-    .modal-overlay.active { display: flex; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    .modal-box {
-      width: 100%; max-width: 340px; border-radius: 36px; padding: 24px 20px 20px;
-      background: var(--glass-strong); display: flex; flex-direction: column; gap: 14px;
-      animation: popIn 0.5s var(--spring);
-    }
-    @keyframes popIn { from { opacity: 0; transform: scale(0.88); } to { opacity: 1; transform: none; } }
-    .modal-title { font-size: 1.0625rem; font-weight: 600; text-align: center; letter-spacing: -0.3px; }
-    .modal-field { display: flex; flex-direction: column; gap: 6px; }
-    .modal-label { font-size: 0.8125rem; font-weight: 500; color: var(--text-muted); padding-left: 8px; }
-    .modal-actions { display: flex; gap: 10px; margin-top: 4px; }
-    .btn-modal {
-      flex: 1; min-height: 50px; border-radius: 999px; font-size: 1.0625rem; font-weight: 600;
-      border: none; cursor: pointer; transition: transform 0.35s var(--spring);
-    }
-    .btn-modal:active { transform: scale(0.96); transition-duration: 0.1s; }
-    .btn-modal-cancel { background: var(--field); color: var(--text-main); }
-    .btn-modal-delete {
-      width: 100%; background: rgba(255, 59, 48, 0.14); color: var(--tint-red);
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-    }
-
-    :is(button, input):focus-visible { outline: 3px solid rgba(0, 122, 255, 0.55); outline-offset: 2px; }
-    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-      :root { --glass: var(--row-solid); --glass-strong: var(--row-solid); }
-    }
-    @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
-      :root { --glass: var(--row-solid); --glass-strong: var(--row-solid); --row: var(--row-solid); }
-      * { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <!-- Header con scroll-edge effect -->
   <header>
     <div class="header-left">
-      <button id="btn-header-back" class="btn-circle-glass" style="display: none;" onclick="showHome()" aria-label="Torna indietro">
-        <svg viewBox="0 0 24 24" style="margin-left: -2px;">
+      <button id="btn-header-back" class="btn-circle-glass" hidden onclick="showHome()" aria-label="Torna indietro">
+        <svg class="chevron-back" viewBox="0 0 24 24">
           <polyline points="15 18 9 12 15 6"></polyline>
         </svg>
       </button>
@@ -375,7 +40,7 @@
     </div>
     <h1 id="header-title">Casa & Scorte</h1>
     <div class="header-right">
-      <button id="btn-header-settings" class="btn-circle-glass" style="display: none;" onclick="openCategorySettingsModal()" aria-label="Impostazioni Categoria">
+      <button id="btn-header-settings" class="btn-circle-glass" hidden onclick="openCategorySettingsModal()" aria-label="Impostazioni Categoria">
         <svg viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="3"></circle>
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83-2.83l.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -414,7 +79,7 @@
         <button class="btn-secondary" onclick="autoPopulateSpesa()">
           <svg class="ico" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg> Carica esauriti
         </button>
-        <button class="btn-secondary" style="color: var(--tint-red);" onclick="clearPurchasedSpesa()">
+        <button class="btn-secondary danger" onclick="clearPurchasedSpesa()">
           <svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg> Rimuovi fatti
         </button>
       </div>
@@ -422,7 +87,7 @@
       <div class="add-form-card">
         <div class="form-row">
           <input type="text" id="input-spesa-manual" class="input-name" placeholder="Aggiungi alla lista spesa..." autocomplete="off">
-          <button class="btn-add" style="padding: 0 20px; font-size: 1.5rem; font-weight: 400;" aria-label="Aggiungi" onclick="addManualSpesa()">+</button>
+          <button class="btn-add btn-plus" aria-label="Aggiungi" onclick="addManualSpesa()">+</button>
         </div>
       </div>
 
@@ -434,21 +99,76 @@
     </div>
   </main>
 
-  <!-- Modal Sincronizzazione Casa (Due Utenti) -->
+  <!-- Benvenuto / primo accesso: crea o collega una casa -->
+  <div class="welcome" id="welcome" role="dialog" aria-modal="true" aria-labelledby="welcome-title" hidden>
+    <div class="welcome-card">
+      <div class="welcome-icon" aria-hidden="true">🏠</div>
+
+      <section class="welcome-step" id="welcome-create">
+        <h2 id="welcome-title">Crea la tua casa</h2>
+        <p class="welcome-sub">Dai un nome alla casa: avrai subito una lista condivisibile con chi vuoi.</p>
+        <div class="modal-field">
+          <label class="modal-label" for="input-house-name">Nome della casa</label>
+          <input type="text" id="input-house-name" placeholder="es. Casa Rossi" maxlength="40" autocomplete="off">
+        </div>
+        <p class="form-error" id="welcome-create-error" role="alert" hidden></p>
+        <button class="btn-add" id="btn-create-house" onclick="createHouse()">Crea casa</button>
+        <button class="link-btn" onclick="showWelcomeStep('join')">Ho già un codice casa</button>
+      </section>
+
+      <section class="welcome-step" id="welcome-join" hidden>
+        <h2>Unisciti a una casa</h2>
+        <p class="welcome-sub">Inserisci il codice che ti ha condiviso chi ha creato la casa.</p>
+        <div class="modal-field">
+          <label class="modal-label" for="input-join-code">Codice casa</label>
+          <input type="text" id="input-join-code" class="input-code" placeholder="XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false">
+        </div>
+        <p class="modal-note" id="welcome-replace-note" hidden>I dati presenti su questo iPhone verranno sostituiti da quelli della casa.</p>
+        <p class="form-error" id="welcome-join-error" role="alert" hidden></p>
+        <button class="btn-add" id="btn-join-house" onclick="joinHouse()">Collega</button>
+        <button class="link-btn" onclick="showWelcomeStep('create')">Crea una nuova casa</button>
+      </section>
+
+      <button class="link-btn" id="welcome-cancel" onclick="closeWelcome()" hidden>Annulla</button>
+    </div>
+  </div>
+
+  <!-- Modal Connessione Cloud -->
   <div class="modal-overlay" id="modal-sync">
-    <div class="modal-box">
-      <div class="modal-title">Condivisione Casa ☁️</div>
-      <p style="font-size: 13px; color: var(--text-muted); text-align: center; line-height: 1.4;">
-        Inserisci lo <strong>stesso Codice Casa</strong> su entrambi gli iPhone per condividere scorte e lista spesa in tempo reale.
-      </p>
-      <div class="modal-field">
-        <span class="modal-label">Codice Casa Condiviso</span>
-        <input type="text" id="input-sync-code" placeholder="es. CASA-ROSSI-2025" style="text-align: center; font-weight: 700; text-transform: uppercase;">
+    <div class="modal-box" role="dialog" aria-labelledby="sync-title">
+      <div class="modal-title" id="sync-title">La tua casa</div>
+
+      <div class="sync-stack" id="sync-connected" hidden>
+        <div class="house-card">
+          <div class="house-name-row" id="house-name-view">
+            <span class="house-name" id="sync-house-name"></span>
+            <button class="chip-btn" onclick="startRenameHouse()">Rinomina</button>
+          </div>
+          <div class="house-name-row" id="house-name-edit" hidden>
+            <input type="text" id="input-rename-house" maxlength="40" autocomplete="off" aria-label="Nome della casa">
+            <button class="chip-btn primary" onclick="saveHouseName()">Salva</button>
+          </div>
+          <div class="status-line"><span class="status-dot" id="sync-status-dot"></span><span id="sync-status-text"></span></div>
+        </div>
+        <div class="modal-field">
+          <span class="modal-label">Codice casa</span>
+          <div class="code-box" id="sync-code"></div>
+        </div>
+        <p class="modal-note">Chi inserisce questo codice su un altro dispositivo vede la stessa lista in tempo reale.</p>
+        <button class="btn-add" id="btn-share-code" onclick="shareHouseCode()">Condividi codice</button>
+        <div class="modal-actions">
+          <button class="btn-modal btn-modal-cancel" onclick="leaveHouse('join')">Altra lista</button>
+          <button class="btn-modal btn-modal-delete" onclick="leaveHouse('create')">Disconnetti</button>
+        </div>
       </div>
-      <div class="modal-actions">
-        <button class="btn-modal btn-modal-cancel" onclick="closeSyncModal()">Chiudi</button>
-        <button class="btn-modal btn-modal-save" onclick="saveSyncCode()">Collega</button>
+
+      <div class="sync-stack" id="sync-disconnected" hidden>
+        <p class="modal-note">Questa lista è salvata solo su questo iPhone. Crea una casa o collegati a un codice per condividerla.</p>
+        <button class="btn-add" onclick="openWelcome('create', true)">Crea casa condivisa</button>
+        <button class="btn-modal btn-modal-cancel" onclick="openWelcome('join', true)">Ho un codice casa</button>
       </div>
+
+      <button class="link-btn" onclick="closeSyncModal()">Chiudi</button>
     </div>
   </div>
 
@@ -462,13 +182,13 @@
       </div>
       <div class="modal-field">
         <span class="modal-label">Emoji Icona</span>
-        <input type="text" id="input-edit-cat-icon" placeholder="es. ❄️ o 🥫" maxlength="4" style="text-align: center; font-size: 20px;">
+        <input type="text" id="input-edit-cat-icon" class="input-emoji" placeholder="es. ❄️ o 🥫" maxlength="4">
       </div>
       <div class="modal-actions">
         <button class="btn-modal btn-modal-cancel" onclick="closeCategorySettingsModal()">Annulla</button>
         <button class="btn-modal btn-modal-save" onclick="saveCategorySettings()">Salva</button>
       </div>
-      <div style="border-top: 0.5px solid rgba(0, 0, 0, 0.1); margin-top: 4px; padding-top: 10px;">
+      <div class="modal-sep">
         <button class="btn-modal btn-modal-delete" onclick="deleteCurrentCategory()">
           <svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg> Elimina categoria
         </button>
@@ -486,7 +206,7 @@
       </div>
       <div class="modal-field">
         <span class="modal-label">Emoji Icona (opzionale)</span>
-        <input type="text" id="input-new-cat-icon" placeholder="es. 🍷 o 💊" maxlength="4" style="text-align: center; font-size: 20px;">
+        <input type="text" id="input-new-cat-icon" class="input-emoji" placeholder="es. 🍷 o 💊" maxlength="4">
       </div>
       <div class="modal-actions">
         <button class="btn-modal btn-modal-cancel" onclick="closeNewCategoryModal()">Annulla</button>
@@ -495,7 +215,45 @@
     </div>
   </div>
 
-  <!-- Floating Liquid Glass Bottom Navigation Bar -->
+  <!-- Modal Nuovo Prodotto (con scelta/creazione categoria) -->
+  <div class="modal-overlay" id="modal-new-item">
+    <div class="modal-box" role="dialog" aria-labelledby="ni-title">
+      <div class="modal-title" id="ni-title">Nuovo prodotto</div>
+      <div class="modal-row">
+        <div class="modal-field grow">
+          <label class="modal-label" for="input-ni-name">Nome prodotto</label>
+          <input type="text" id="input-ni-name" placeholder="es. Latte" autocomplete="off">
+        </div>
+        <div class="modal-field qty">
+          <label class="modal-label" for="input-ni-qty">Quantità</label>
+          <input type="number" id="input-ni-qty" class="input-center" value="1" min="0" inputmode="numeric">
+        </div>
+      </div>
+      <div class="modal-field">
+        <span class="modal-label" id="ni-cat-label">Categoria</span>
+        <div class="chips" id="ni-chips" role="radiogroup" aria-labelledby="ni-cat-label"></div>
+      </div>
+      <div class="modal-row" id="ni-newcat" hidden>
+        <div class="modal-field emoji">
+          <label class="modal-label" for="input-ni-cat-icon">Icona</label>
+          <input type="text" id="input-ni-cat-icon" class="input-emoji" placeholder="📦" maxlength="4">
+        </div>
+        <div class="modal-field grow">
+          <label class="modal-label" for="input-ni-cat-title">Nome categoria</label>
+          <input type="text" id="input-ni-cat-title" placeholder="es. Cantina" autocomplete="off">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-modal-cancel" onclick="closeNewItemModal()">Annulla</button>
+        <button class="btn-modal btn-modal-save" onclick="saveNewItem()">Aggiungi</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <!-- Dock: tab bar in vetro + azione "Nuovo prodotto" -->
+  <div class="dock">
   <nav class="liquid-glass-nav">
     <span class="lens" aria-hidden="true"></span>
     <button class="nav-tab active" id="tab-home" onclick="switchToTab('home')">
@@ -505,684 +263,12 @@
     <button class="nav-tab" id="tab-spesa" onclick="switchToTab('spesa')">
       <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
       Lista Spesa
-      <span class="badge" id="spesa-badge" style="display: none;">0</span>
+      <span class="badge" id="spesa-badge" hidden>0</span>
     </button>
   </nav>
+  <button class="dock-add" onclick="openNewItemModal()" aria-label="Nuovo prodotto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+  </div>
 
-  <script>
-    /* ==========================================================
-       1. CONFIGURAZIONE FIREBASE CONDIVISA (Gratuita)
-       Sostituisci questi parametri con quelli del tuo progetto
-       Firebase (vedi capitolo 3 per la procedura rapida).
-    ========================================================== */
-    const firebaseConfig = {
-      apiKey: "AIzaSyDhtvjCZstnA0zAFeNZJHRRvFHxiGznrqk",
-      authDomain: "listapp-a19e7.firebaseapp.com",
-      databaseURL: "https://listapp-a19e7-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "listapp-a19e7",
-      storageBucket: "listapp-a19e7.firebasestorage.app",
-      messagingSenderId: "157156284614",
-      appId: "1:157156284614:web:53538938edb6883d0e9fc7",
-      measurementId: "G-NBRZM1VV4T"
-    };
-
-    let fbDatabase = null;
-    let householdRef = null;
-    let isFirebaseConfigured = false;
-
-    if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "INSERISCI_LA_TUA_API_KEY") {
-      try {
-        firebase.initializeApp(firebaseConfig);
-        fbDatabase = firebase.database();
-        isFirebaseConfigured = true;
-      } catch (err) {
-        console.warn("Firebase non inizializzato:", err);
-      }
-    }
-
-    /* ==========================================================
-       2. DATI E STATO APPLICAZIONE
-    ========================================================== */
-    const DEFAULT_CATEGORIES = {
-      frigo: { title: "Frigorifero", icon: "❄️", color: "var(--tint-blue)" },
-      dispensa: { title: "Dispensa", icon: "🥫", color: "var(--tint-orange)" },
-      cane: { title: "Cibo Cane", icon: "🐶", color: "var(--tint-purple)" },
-      ripostiglio: { title: "Ripostiglio", icon: "🧹", color: "var(--tint-green)" }
-    };
-
-    let appData = {
-      categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
-      inventory: {
-        frigo: [
-          { id: "1", name: "Latte Intero", qty: 2 },
-          { id: "2", name: "Parmigiano Reggiano", qty: 1 }
-        ],
-        dispensa: [
-          { id: "3", name: "Pasta Spaghetti", qty: 4 },
-          { id: "4", name: "Passata di pomodoro", qty: 1 },
-          { id: "5", name: "Caffè macinato", qty: 0 }
-        ],
-        cane: [
-          { id: "6", name: "Croccantini Sacchetto 12kg", qty: 1 },
-          { id: "7", name: "Snack Dentali", qty: 2 }
-        ],
-        ripostiglio: [
-          { id: "8", name: "Detersivo Lavatrice", qty: 1 },
-          { id: "9", name: "Pastiglie Lavastoviglie", qty: 0 }
-        ]
-      },
-      spesa: [
-        { id: "s1", name: "Caffè macinato", done: false, fromCat: "dispensa" },
-        { id: "s2", name: "Pastiglie Lavastoviglie", done: false, fromCat: "ripostiglio" }
-      ]
-    };
-
-    let currentCategory = null;
-    let householdCode = localStorage.getItem("smart_pantry_sync_code") || "";
-
-    function setSyncDot(status) {
-      const dot = document.getElementById("sync-dot");
-      dot.className = "sync-indicator " + status;
-    }
-
-    /* ==========================================================
-       3. GESTIONE SINCRONIZZAZIONE REALTIME
-    ========================================================== */
-    function initSync() {
-      if (!isFirebaseConfigured || !householdCode) {
-        setSyncDot("");
-        loadLocalData();
-        return;
-      }
-
-      const safeKey = householdCode.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '_');
-      householdRef = fbDatabase.ref("households/" + safeKey);
-
-      setSyncDot("syncing");
-
-      // Ascolto in tempo reale tra i due dispositivi
-      householdRef.on("value", (snapshot) => {
-        const remoteData = snapshot.val();
-        if (remoteData) {
-          appData = remoteData;
-          if (!appData.categories) appData.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
-          if (!appData.inventory) appData.inventory = {};
-          if (!appData.spesa) appData.spesa = [];
-
-          localStorage.setItem("smart_pantry_ios_pwa_v4", JSON.stringify(appData));
-          refreshCurrentView();
-          setSyncDot("online");
-        } else {
-          syncToCloud();
-          setSyncDot("online");
-        }
-      }, (error) => {
-        console.error("Errore sincronizzazione Firebase:", error);
-        setSyncDot("");
-        loadLocalData();
-      });
-    }
-
-    function syncToCloud() {
-      if (householdRef) {
-        setSyncDot("syncing");
-        householdRef.set(appData)
-          .then(() => setSyncDot("online"))
-          .catch(() => setSyncDot(""));
-      }
-    }
-
-    function loadLocalData() {
-      const saved = localStorage.getItem("smart_pantry_ios_pwa_v4");
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          if (parsed.categories && parsed.inventory && parsed.spesa) {
-            appData = parsed;
-          }
-        } catch (e) {
-          console.error(e);
-        }
-      }
-      refreshCurrentView();
-    }
-
-    function persistData() {
-      localStorage.setItem("smart_pantry_ios_pwa_v4", JSON.stringify(appData));
-      if (householdRef) {
-        syncToCloud();
-      }
-      refreshCurrentView();
-    }
-
-    function refreshCurrentView() {
-      renderHomeTiles();
-      updateBadge();
-      if (currentCategory && appData.categories && appData.categories[currentCategory]) {
-        renderCategoryItems();
-      } else if (document.getElementById("view-spesa").classList.contains("active")) {
-        renderSpesaItems();
-      } else {
-        showHome();
-      }
-    }
-
-    /* Modal Sincronizzazione Casa */
-    function openSyncModal() {
-      document.getElementById("input-sync-code").value = householdCode;
-      document.getElementById("modal-sync").classList.add("active");
-    }
-
-    function closeSyncModal() {
-      document.getElementById("modal-sync").classList.remove("active");
-    }
-
-    function saveSyncCode() {
-      const code = document.getElementById("input-sync-code").value.trim().toUpperCase();
-      householdCode = code;
-      localStorage.setItem("smart_pantry_sync_code", code);
-      closeSyncModal();
-
-      if (householdRef) {
-        householdRef.off();
-        householdRef = null;
-      }
-
-      if (householdCode) {
-        alert(`Collegato alla Casa: "${householdCode}". Inserisci lo stesso codice sull'altro iPhone.`);
-        initSync();
-      } else {
-        alert("Codice rimosso. L'app funzionerà in modalità solo locale.");
-        setSyncDot("");
-      }
-    }
-
-    /* ==========================================================
-       4. LOGICA NAVIGAZIONE ED ELEMENTI
-    ========================================================== */
-    function updateBadge() {
-      const pendingSpesa = (appData.spesa || []).filter(item => !item.done).length;
-      const badge = document.getElementById("spesa-badge");
-      if (pendingSpesa > 0) {
-        badge.textContent = pendingSpesa;
-        badge.style.display = "inline-block";
-      } else {
-        badge.style.display = "none";
-      }
-    }
-
-    function renderHomeTiles() {
-      const container = document.getElementById("tiles-container");
-      container.innerHTML = "";
-
-      Object.keys(appData.categories || {}).forEach(catKey => {
-        const cat = appData.categories[catKey];
-        const items = (appData.inventory && appData.inventory[catKey]) || [];
-        const count = items.length;
-
-        const tile = document.createElement("div");
-        tile.className = "tile-card";
-        if (cat.color) {
-          tile.style.setProperty('--tint', cat.color);
-        }
-        tile.onclick = () => openCategory(catKey);
-
-        tile.innerHTML = `
-          <div class="tile-icon">${cat.icon || '📦'}</div>
-          <div>
-            <div class="tile-title">${escapeHtml(cat.title)}</div>
-            <div class="tile-count">${count} ${count === 1 ? 'prodotto' : 'prodotti'}</div>
-          </div>
-        `;
-        container.appendChild(tile);
-      });
-
-      const addTile = document.createElement("div");
-      addTile.className = "tile-card tile-add-new";
-      addTile.onclick = openNewCategoryModal;
-      addTile.innerHTML = `
-        <div class="plus-circle">+</div>
-        <div class="tile-title">Nuova categoria</div>
-      `;
-      container.appendChild(addTile);
-    }
-
-    function showHome() {
-      currentCategory = null;
-      document.getElementById("view-home").classList.add("active");
-      document.getElementById("view-category").classList.remove("active");
-      document.getElementById("view-spesa").classList.remove("active");
-
-      document.getElementById("tab-home").classList.add("active");
-      document.getElementById("tab-spesa").classList.remove("active");
-
-      document.getElementById("header-title").textContent = "Casa & Scorte";
-      document.getElementById("btn-header-back").style.display = "none";
-      document.getElementById("btn-header-settings").style.display = "none";
-
-      renderHomeTiles();
-    }
-
-    function openCategory(catKey) {
-      currentCategory = catKey;
-      const meta = appData.categories[catKey] || { title: "Categoria", icon: "📦" };
-
-      document.getElementById("view-home").classList.remove("active");
-      document.getElementById("view-spesa").classList.remove("active");
-      document.getElementById("view-category").classList.add("active");
-
-      document.getElementById("header-title").textContent = `${meta.icon || ''} ${meta.title}`;
-      document.getElementById("btn-header-back").style.display = "flex";
-      document.getElementById("btn-header-settings").style.display = "flex";
-
-      renderCategoryItems();
-    }
-
-    function switchToTab(tabName) {
-      if (tabName === 'home') {
-        showHome();
-      } else if (tabName === 'spesa') {
-        currentCategory = null;
-        document.getElementById("view-home").classList.remove("active");
-        document.getElementById("view-category").classList.remove("active");
-        document.getElementById("view-spesa").classList.add("active");
-
-        document.getElementById("tab-home").classList.remove("active");
-        document.getElementById("tab-spesa").classList.add("active");
-
-        document.getElementById("header-title").textContent = "Lista Spesa";
-        document.getElementById("btn-header-back").style.display = "none";
-        document.getElementById("btn-header-settings").style.display = "none";
-        renderSpesaItems();
-      }
-    }
-
-    /* Modal Impostazioni Categoria (Modifica & Elimina) */
-    function openCategorySettingsModal() {
-      if (!currentCategory || !appData.categories[currentCategory]) return;
-      const meta = appData.categories[currentCategory];
-      document.getElementById("input-edit-cat-title").value = meta.title || "";
-      document.getElementById("input-edit-cat-icon").value = meta.icon || "";
-      document.getElementById("modal-category-settings").classList.add("active");
-    }
-
-    function closeCategorySettingsModal() {
-      document.getElementById("modal-category-settings").classList.remove("active");
-    }
-
-    function saveCategorySettings() {
-      if (!currentCategory || !appData.categories[currentCategory]) return;
-      const title = document.getElementById("input-edit-cat-title").value.trim();
-      const icon = document.getElementById("input-edit-cat-icon").value.trim() || "📦";
-
-      if (!title) {
-        alert("Inserisci un nome valido.");
-        return;
-      }
-
-      appData.categories[currentCategory].title = title;
-      appData.categories[currentCategory].icon = icon;
-
-      persistData();
-      closeCategorySettingsModal();
-      document.getElementById("header-title").textContent = `${icon} ${title}`;
-    }
-
-    function deleteCurrentCategory() {
-      if (!currentCategory || !appData.categories[currentCategory]) return;
-      const catTitle = appData.categories[currentCategory].title || "questa categoria";
-      const itemsCount = (appData.inventory && appData.inventory[currentCategory]) ? appData.inventory[currentCategory].length : 0;
-
-      const confirmMessage = itemsCount > 0
-        ? `Sei sicuro di voler eliminare "${catTitle}" e i suoi ${itemsCount} articoli salvati?\n\nL'operazione non può essere annullata.`
-        : `Sei sicuro di voler eliminare la categoria "${catTitle}"?`;
-
-      if (!confirm(confirmMessage)) {
-        return;
-      }
-
-      const deletedCatKey = currentCategory;
-
-      // 1. Rimuovi la categoria e il suo inventario
-      delete appData.categories[deletedCatKey];
-      if (appData.inventory && appData.inventory[deletedCatKey]) {
-        delete appData.inventory[deletedCatKey];
-      }
-
-      // 2. Rimuovi il riferimento alla categoria negli articoli della spesa
-      if (appData.spesa) {
-        appData.spesa.forEach(item => {
-          if (item.fromCat === deletedCatKey) {
-            item.fromCat = null;
-          }
-        });
-      }
-
-      closeCategorySettingsModal();
-      persistData();
-      showHome();
-    }
-
-    /* Modal Nuova Categoria */
-    function openNewCategoryModal() {
-      document.getElementById("input-new-cat-title").value = "";
-      document.getElementById("input-new-cat-icon").value = "";
-      document.getElementById("modal-new-category").classList.add("active");
-      setTimeout(() => document.getElementById("input-new-cat-title").focus(), 100);
-    }
-
-    function closeNewCategoryModal() {
-      document.getElementById("modal-new-category").classList.remove("active");
-    }
-
-    function createNewCategory() {
-      const title = document.getElementById("input-new-cat-title").value.trim();
-      let icon = document.getElementById("input-new-cat-icon").value.trim() || "📦";
-
-      if (!title) {
-        alert("Il nome della categoria è obbligatorio.");
-        return;
-      }
-
-      const catId = "cat_" + Date.now();
-      const colors = ["var(--tint-blue)", "var(--tint-orange)", "var(--tint-purple)", "var(--tint-green)", "#5856D6", "#FF2D55"];
-      const randomColor = colors[Math.floor(Math.random() * colors.length)];
-
-      appData.categories[catId] = {
-        title: title,
-        icon: icon,
-        color: randomColor
-      };
-
-      if (!appData.inventory) appData.inventory = {};
-      appData.inventory[catId] = [];
-
-      persistData();
-      closeNewCategoryModal();
-    }
-
-    /* Gestione Articoli Scorte */
-    function renderCategoryItems() {
-      const container = document.getElementById("category-items-container");
-      container.innerHTML = "";
-
-      const items = (appData.inventory && appData.inventory[currentCategory]) || [];
-      if (items.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            Nessun articolo in questa categoria.<br>
-            Aggiungi il primo elemento usando il modulo sopra!
-          </div>
-        `;
-        return;
-      }
-
-      items.forEach(item => {
-        let statusClass = "status-ok";
-        let statusText = "Disponibile";
-
-        if (item.qty === 0) {
-          statusClass = "status-empty";
-          statusText = "Terminato (0)";
-        } else if (item.qty <= 1) {
-          statusClass = "status-low";
-          statusText = "Scorta Bassa (1)";
-        }
-
-        const div = document.createElement("div");
-        div.className = "item-card";
-        div.innerHTML = `
-          <div class="item-info">
-            <span class="item-name">${escapeHtml(item.name)}</span>
-            <span class="item-status ${statusClass}">${statusText}</span>
-          </div>
-          <div class="item-actions">
-            <button class="btn-quick-spesa" title="Aggiungi a spesa" aria-label="Aggiungi alla spesa" onclick="addSingleToSpesa('${escapeHtml(item.name)}', '${currentCategory}')"><svg class="ico" viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.2"/><circle cx="18" cy="20" r="1.2"/><path d="M2 3h3l2.7 12.4a1 1 0 0 0 1 .8h8.8a1 1 0 0 0 1-.8L20.5 7H6"/></svg></button>
-            <button class="qty-btn" aria-label="Diminuisci" onclick="updateQty('${item.id}', -1)">−</button>
-            <span class="qty-value">${item.qty}</span>
-            <button class="qty-btn" aria-label="Aumenta" onclick="updateQty('${item.id}', 1)">+</button>
-            <button class="qty-btn" style="color: var(--tint-red); margin-left: 2px;" aria-label="Elimina articolo" onclick="deleteItem('${item.id}')"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    function addItem() {
-      const nameInput = document.getElementById("input-item-name");
-      const qtyInput = document.getElementById("input-item-qty");
-      const name = nameInput.value.trim();
-      const qty = parseInt(qtyInput.value, 10);
-
-      if (!name) return;
-
-      const newItem = {
-        id: "item_" + Date.now(),
-        name: name,
-        qty: isNaN(qty) ? 1 : Math.max(0, qty)
-      };
-
-      if (!appData.inventory) appData.inventory = {};
-      if (!appData.inventory[currentCategory]) {
-        appData.inventory[currentCategory] = [];
-      }
-
-      appData.inventory[currentCategory].push(newItem);
-      persistData();
-
-      nameInput.value = "";
-      qtyInput.value = 1;
-      nameInput.blur();
-    }
-
-    function updateQty(id, delta) {
-      const item = appData.inventory[currentCategory].find(i => i.id === id);
-      if (item) {
-        item.qty = Math.max(0, item.qty + delta);
-        persistData();
-      }
-    }
-
-    function deleteItem(id) {
-      appData.inventory[currentCategory] = appData.inventory[currentCategory].filter(i => i.id !== id);
-      persistData();
-    }
-
-    /* Gestione Lista Spesa con Swipe to Dismiss */
-    function renderSpesaItems() {
-      const container = document.getElementById("spesa-items-container");
-      container.innerHTML = "";
-
-      const spesaList = appData.spesa || [];
-      if (spesaList.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            La lista della spesa è vuota! 🎉<br>
-            Tocca <strong>"Carica esauriti"</strong> per caricare gli articoli finiti o inseriscine uno manualmente.
-          </div>
-        `;
-        return;
-      }
-
-      spesaList.forEach(item => {
-        const catMeta = item.fromCat ? appData.categories[item.fromCat] : null;
-        const catBadge = catMeta ? `<span class="category-tag">${catMeta.icon || ''} ${escapeHtml(catMeta.title)}</span>` : '';
-
-        const swipeContainer = document.createElement("div");
-        swipeContainer.className = "swipe-container";
-        swipeContainer.id = `swipe-${item.id}`;
-
-        swipeContainer.innerHTML = `
-          <div class="swipe-action-bg" onclick="dismissSpesaItem('${item.id}')">
-            <svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg> Elimina
-          </div>
-          <div class="spesa-item ${item.done ? 'checked' : ''}" id="item-${item.id}">
-            <div style="display: flex; align-items: center; flex: 1;">
-              <div class="checkbox" onclick="toggleSpesa('${item.id}')">
-                ${item.done ? '✓' : ''}
-              </div>
-              <span class="spesa-text">${escapeHtml(item.name)}</span>
-              ${catBadge}
-            </div>
-            <span style="color: var(--text-muted); font-size: 16px; padding-left: 6px;">‹</span>
-          </div>
-        `;
-
-        container.appendChild(swipeContainer);
-        attachSwipeEvents(swipeContainer.querySelector('.spesa-item'), item.id);
-      });
-    }
-
-    function attachSwipeEvents(element, id) {
-      let startX = 0;
-      let currentX = 0;
-      let isSwiping = false;
-
-      element.addEventListener('touchstart', (e) => {
-        startX = e.touches[0].clientX;
-        currentX = startX;
-        isSwiping = true;
-        element.classList.add('swiping');
-      }, { passive: true });
-
-      element.addEventListener('touchmove', (e) => {
-        if (!isSwiping) return;
-        currentX = e.touches[0].clientX;
-        const diffX = currentX - startX;
-
-        if (diffX < 0) {
-          const clampedDiff = Math.max(diffX, -140);
-          element.style.transform = `translateX(${clampedDiff}px)`;
-        } else {
-          element.style.transform = 'translateX(0px)';
-        }
-      }, { passive: true });
-
-      element.addEventListener('touchend', () => {
-        if (!isSwiping) return;
-        isSwiping = false;
-        element.classList.remove('swiping');
-
-        const diffX = currentX - startX;
-
-        if (diffX < -115) {
-          element.style.transform = 'translateX(-100%)';
-          setTimeout(() => dismissSpesaItem(id), 180);
-        } else if (diffX < -50) {
-          element.style.transform = 'translateX(-90px)';
-        } else {
-          element.style.transform = 'translateX(0px)';
-        }
-      });
-    }
-
-    function dismissSpesaItem(id) {
-      const container = document.getElementById(`swipe-${id}`);
-      if (container) {
-        container.classList.add('collapsed');
-        setTimeout(() => {
-          removeSpesaItem(id);
-        }, 280);
-      } else {
-        removeSpesaItem(id);
-      }
-    }
-
-    function toggleSpesa(id) {
-      const item = appData.spesa.find(s => s.id === id);
-      if (item) {
-        item.done = !item.done;
-        persistData();
-      }
-    }
-
-    function addManualSpesa() {
-      const input = document.getElementById("input-spesa-manual");
-      const name = input.value.trim();
-      if (!name) return;
-
-      if (!appData.spesa) appData.spesa = [];
-      appData.spesa.push({
-        id: "sp_" + Date.now(),
-        name: name,
-        done: false,
-        fromCat: null
-      });
-
-      input.value = "";
-      input.blur();
-      persistData();
-    }
-
-    function addSingleToSpesa(itemName, cat) {
-      if (!appData.spesa) appData.spesa = [];
-      const exists = appData.spesa.some(s => s.name.toLowerCase() === itemName.toLowerCase() && !s.done);
-      if (!exists) {
-        appData.spesa.push({
-          id: "sp_" + Date.now(),
-          name: itemName,
-          done: false,
-          fromCat: cat
-        });
-        persistData();
-        alert(`"${itemName}" aggiunto alla lista spesa!`);
-      } else {
-        alert(`"${itemName}" è già presente nella lista spesa.`);
-      }
-    }
-
-    function autoPopulateSpesa() {
-      let added = 0;
-      if (!appData.spesa) appData.spesa = [];
-
-      Object.keys(appData.inventory || {}).forEach(cat => {
-        appData.inventory[cat].forEach(item => {
-          if (item.qty <= 1) {
-            const alreadyInSpesa = appData.spesa.some(s => s.name.toLowerCase() === item.name.toLowerCase() && !s.done);
-            if (!alreadyInSpesa) {
-              appData.spesa.push({
-                id: "sp_" + Date.now() + Math.random().toString(36).substr(2, 4),
-                name: item.name,
-                done: false,
-                fromCat: cat
-              });
-              added++;
-            }
-          }
-        });
-      });
-
-      persistData();
-      alert(added > 0 ? `Aggiunti ${added} articoli in esaurimento!` : "Tutti gli articoli esauriti sono già in lista.");
-    }
-
-    function clearPurchasedSpesa() {
-      appData.spesa = (appData.spesa || []).filter(s => !s.done);
-      persistData();
-    }
-
-    function removeSpesaItem(id) {
-      appData.spesa = (appData.spesa || []).filter(s => s.id !== id);
-      persistData();
-    }
-
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-
-    // Inizializzazione Sincronizzazione / Locale
-    initSync();
-
-    // Service Worker PWA
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-          .then(reg => console.log('SW registrato:', reg.scope))
-          .catch(err => console.error('Errore SW:', err));
-      });
-    }
-  </script>
+  <script src="app.js" defer></script>
 </body>
 </html>
