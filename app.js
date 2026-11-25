@@ -229,7 +229,7 @@ async function createHouse() {
   const input = document.getElementById("input-house-name");
   const button = document.getElementById("btn-create-house");
   const errorId = "welcome-create-error";
-  const name = input.value.trim();
+  const name = input.value.trim().toLocaleUpperCase("it-IT");
 
   setWelcomeError(errorId, "");
   input.removeAttribute("aria-invalid");
@@ -349,7 +349,7 @@ function renderSyncModal() {
   document.getElementById("sync-status-text").textContent = live
     ? "Connessa · aggiornata in tempo reale"
     : "Non raggiungibile · modifiche solo su questo dispositivo";
-  document.getElementById("btn-share-code").textContent = navigator.share ? "Condividi codice" : "Copia codice";
+  document.getElementById("btn-share-label").textContent = navigator.share ? "Condividi codice" : "Copia codice";
 }
 
 function startRenameHouse() {
@@ -367,7 +367,7 @@ function cancelRenameHouse() {
 
 function saveHouseName() {
   const input = document.getElementById("input-rename-house");
-  const name = input.value.trim();
+  const name = input.value.trim().toLocaleUpperCase("it-IT");
   if (!name) { input.setAttribute("aria-invalid", "true"); input.focus(); return; }
   input.removeAttribute("aria-invalid");
   appData.name = name;
@@ -434,7 +434,7 @@ function renderHomeTiles() {
   addTile.className = "tile-card tile-add-new";
   addTile.onclick = openNewCategoryModal;
   addTile.innerHTML = `
-    <div class="plus-circle">+</div>
+    <div class="plus-circle"><svg aria-hidden="true"><use href="#i-add"/></svg></div>
     <div class="tile-title">Nuova categoria</div>
   `;
   container.appendChild(addTile);
@@ -645,11 +645,11 @@ function renderCategoryItems() {
         <span class="item-status ${statusClass}">${statusText}</span>
       </div>
       <div class="item-actions">
-        <button class="btn-quick-spesa" title="Aggiungi a spesa" aria-label="Aggiungi alla spesa" onclick="addSingleToSpesa('${escapeHtml(item.name)}', '${currentCategory}')"><svg class="ico" viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.2"/><circle cx="18" cy="20" r="1.2"/><path d="M2 3h3l2.7 12.4a1 1 0 0 0 1 .8h8.8a1 1 0 0 0 1-.8L20.5 7H6"/></svg></button>
-        <button class="qty-btn" aria-label="Diminuisci" onclick="updateQty('${item.id}', -1)">−</button>
+        <button class="btn-quick-spesa" title="Aggiungi a spesa" aria-label="Aggiungi alla spesa" onclick="addSingleToSpesa('${escapeHtml(item.name)}', '${currentCategory}')"><svg class="ico" aria-hidden="true"><use href="#i-cart"/></svg></button>
+        <button class="qty-btn" aria-label="Diminuisci" onclick="updateQty('${item.id}', -1)"><svg class="ico" aria-hidden="true"><use href="#i-minus-s"/></svg></button>
         <span class="qty-value">${item.qty}</span>
-        <button class="qty-btn" aria-label="Aumenta" onclick="updateQty('${item.id}', 1)">+</button>
-        <button class="qty-btn danger" aria-label="Elimina articolo" onclick="deleteItem('${item.id}')"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        <button class="qty-btn" aria-label="Aumenta" onclick="updateQty('${item.id}', 1)"><svg class="ico" aria-hidden="true"><use href="#i-add-s"/></svg></button>
+        <button class="qty-btn danger" aria-label="Elimina articolo" onclick="deleteItem('${item.id}')"><svg class="ico" aria-hidden="true"><use href="#i-dismiss-s"/></svg></button>
       </div>
     `;
     container.appendChild(div);
@@ -711,17 +711,17 @@ function renderSpesaItems() {
 
     swipeContainer.innerHTML = `
       <div class="swipe-action-bg" onclick="dismissSpesaItem('${item.id}')">
-        <svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg> Elimina
+        <svg class="ico" aria-hidden="true"><use href="#i-delete"/></svg> Elimina
       </div>
       <div class="spesa-item ${item.done ? 'checked' : ''}" id="item-${item.id}">
         <div class="spesa-main">
           <div class="checkbox" onclick="toggleSpesa('${item.id}')">
-            ${item.done ? '✓' : ''}
+            ${item.done ? '<svg class="ico" aria-hidden="true"><use href="#i-checkmark-s"/></svg>' : ''}
           </div>
           <span class="spesa-text">${escapeHtml(item.name)}</span>
           ${catBadge}
         </div>
-        <span class="spesa-chevron">‹</span>
+        <span class="spesa-chevron"><svg class="ico" aria-hidden="true"><use href="#i-chevron-left-s"/></svg></span>
       </div>
     `;
 
