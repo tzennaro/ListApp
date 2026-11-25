@@ -55,6 +55,16 @@ let appData = freshData();
 let currentCategory = null;
 let householdCode = localStorage.getItem(LS_CODE) || "";
 
+/* Titolo della vista: grande nella pagina, compatto nell'header dopo lo scroll */
+function setTitle(text) {
+  document.getElementById("header-title").textContent = text;
+  document.getElementById("large-title").textContent = text;
+}
+
+window.addEventListener("scroll", () => {
+  document.querySelector("header").classList.toggle("scrolled", window.scrollY > 24);
+}, { passive: true });
+
 function setSyncDot(status) {
   const dot = document.getElementById("sync-dot");
   dot.className = "sync-indicator " + status;
@@ -449,7 +459,7 @@ function showHome() {
   document.getElementById("tab-home").classList.add("active");
   document.getElementById("tab-spesa").classList.remove("active");
 
-  document.getElementById("header-title").textContent = appData.name || "Casa & Scorte";
+  setTitle(appData.name || "Casa & Scorte");
   document.getElementById("btn-header-back").hidden = true;
   document.getElementById("btn-header-settings").hidden = true;
 
@@ -464,7 +474,7 @@ function openCategory(catKey) {
   document.getElementById("view-spesa").classList.remove("active");
   document.getElementById("view-category").classList.add("active");
 
-  document.getElementById("header-title").textContent = `${meta.icon || ''} ${meta.title}`;
+  setTitle(`${meta.icon || ''} ${meta.title}`);
   document.getElementById("btn-header-back").hidden = false;
   document.getElementById("btn-header-settings").hidden = false;
 
@@ -483,7 +493,7 @@ function switchToTab(tabName) {
     document.getElementById("tab-home").classList.remove("active");
     document.getElementById("tab-spesa").classList.add("active");
 
-    document.getElementById("header-title").textContent = "Lista Spesa";
+    setTitle("Lista Spesa");
     document.getElementById("btn-header-back").hidden = true;
     document.getElementById("btn-header-settings").hidden = true;
     renderSpesaItems();
@@ -518,7 +528,7 @@ function saveCategorySettings() {
 
   persistData();
   closeCategorySettingsModal();
-  document.getElementById("header-title").textContent = `${icon} ${title}`;
+  setTitle(`${icon} ${title}`);
 }
 
 function deleteCurrentCategory() {
