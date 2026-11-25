@@ -81,7 +81,7 @@ body::before {
 }
 
 /* ---------- Materiale Liquid Glass ---------- */
-:is(.btn-circle-glass, nav.liquid-glass-nav, .dock-add, .tile-card, .add-form-card, .btn-secondary, .modal-box, .toast, .welcome-card) {
+:is(.btn-circle-glass, .liquid-glass-nav, .dock-add, .tile-card, .add-form-card, .btn-secondary, .modal-box, .toast, .welcome-card) {
   position: relative; isolation: isolate;
   background: var(--glass);
   -webkit-backdrop-filter: blur(22px) saturate(180%);
@@ -89,7 +89,7 @@ body::before {
   box-shadow: inset 0 1px 0 var(--hi), inset 0 -1px 0 var(--lo), 0 10px 30px -10px var(--shadow);
 }
 /* Bordo speculare che cattura la luce */
-:is(.btn-circle-glass, nav.liquid-glass-nav, .dock-add, .tile-card, .add-form-card, .btn-secondary, .modal-box, .toast, .welcome-card)::before {
+:is(.btn-circle-glass, .liquid-glass-nav, .dock-add, .tile-card, .add-form-card, .btn-secondary, .modal-box, .toast, .welcome-card)::before {
   content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
   pointer-events: none;
   background: linear-gradient(140deg, var(--rim-a), var(--rim-b) 35%, var(--rim-b) 65%, var(--rim-a));
@@ -270,8 +270,7 @@ nav.liquid-glass-nav {
 }
 .dock-add {
   width: 66px; height: 66px; flex-shrink: 0; border: none; border-radius: 50%;
-  color: #fff; cursor: pointer; display: grid; place-items: center;
-  background: color-mix(in srgb, var(--tint-blue) 82%, transparent);
+  color: var(--tint-blue); cursor: pointer; display: grid; place-items: center;
   transition: transform 0.4s var(--spring);
 }
 .dock-add svg { width: 26px; height: 26px; }
@@ -448,3 +447,9 @@ input[aria-invalid="true"] { box-shadow: 0 0 0 2px var(--tint-red); }
   word-break: break-all; -webkit-user-select: text; user-select: text;
 }
 .modal-actions .btn-modal-delete { width: auto; }
+
+/* "+" di Nuova categoria: solo il simbolo, senza cerchio */
+.tile-add-new .plus-circle {
+  background: none; box-shadow: none; width: auto; height: 54px;
+  font-size: 3rem; font-weight: 300; line-height: 1;
+}
