@@ -207,15 +207,16 @@ input:focus { box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.35); background: var(--g
 /* ---------- Righe lista (livello contenuti) ---------- */
 .item-list { display: flex; flex-direction: column; gap: 10px; }
 .item-card {
-  background: var(--row); border-radius: 22px; padding: 10px 12px 10px 16px; min-height: 64px;
-  display: flex; align-items: center; justify-content: space-between;
+  background: var(--row); border-radius: 22px; padding: 14px 12px 12px 16px;
+  display: grid; grid-template-columns: 1fr auto; grid-template-areas: "name name" "status actions";
+  align-items: center; row-gap: 10px; column-gap: 8px;
   box-shadow: inset 0 1px 0 var(--hi), inset 0 0 0 0.5px var(--lo), 0 6px 18px -10px var(--shadow);
 }
-.item-info { display: flex; flex-direction: column; gap: 2px; flex: 1; margin-right: 8px; min-width: 0; }
-.item-name { word-break: break-word; font: var(--t-headline); letter-spacing: var(--tr-headline); }
-.item-status { font: var(--t-footnote-s); letter-spacing: var(--tr-footnote); }
+.item-info { display: contents; }
+.item-name { grid-area: name; min-width: 0; padding-right: 4px; overflow-wrap: anywhere; text-wrap: pretty; font: var(--t-headline); letter-spacing: var(--tr-headline); }
+.item-status { grid-area: status; min-width: 0; font: var(--t-footnote-s); letter-spacing: var(--tr-footnote); }
 .status-ok { color: var(--ok); } .status-low { color: var(--low); } .status-empty { color: var(--empty); }
-.item-actions { display: flex; align-items: center; gap: 6px; }
+.item-actions { grid-area: actions; display: flex; align-items: center; gap: 6px; }
 .qty-btn, .btn-quick-spesa {
   position: relative; width: 36px; height: 36px; border-radius: 50%; border: none;
   background: var(--field); color: var(--text-main);
@@ -256,9 +257,9 @@ input:focus { box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.35); background: var(--g
 .spesa-item.swiping { transition: none; }
 .spesa-item.checked { opacity: 0.6; }
 .spesa-item.checked .spesa-text { text-decoration: line-through; color: var(--text-muted); }
-.spesa-text { font: var(--t-body); letter-spacing: var(--tr-body); }
+.spesa-text { grid-column: 2; min-width: 0; overflow-wrap: anywhere; text-wrap: pretty; font: var(--t-body); letter-spacing: var(--tr-body); }
 .checkbox {
-  width: 26px; height: 26px; border-radius: 50%; margin-right: 12px; flex-shrink: 0;
+  width: 26px; height: 26px; border-radius: 50%; grid-row: 1 / span 2; grid-column: 1; flex-shrink: 0;
   border: 1.5px solid var(--text-muted); cursor: pointer;
   display: inline-flex; align-items: center; justify-content: center;
   transition: background-color 0.2s, border-color 0.2s, transform 0.35s var(--spring);
@@ -266,7 +267,7 @@ input:focus { box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.35); background: var(--g
 }
 .checkbox::after { content: ""; position: absolute; inset: -9px; } /* area tocco 44pt */
 .spesa-item.checked .checkbox { background: var(--tint-green); border-color: var(--tint-green); color: #fff; }
-.category-tag { padding: 3px 9px; border-radius: 999px; background: var(--field); color: var(--text-muted); margin-left: 8px; font: var(--t-caption); letter-spacing: var(--tr-caption); }
+.category-tag { padding: 3px 9px; border-radius: 999px; background: var(--field); color: var(--text-muted); grid-column: 2; justify-self: start; margin: 4px 0 0; font: var(--t-caption); letter-spacing: var(--tr-caption); }
 .empty-state { text-align: center; padding: 48px 20px; color: var(--text-muted); font: var(--t-subhead); letter-spacing: var(--tr-subhead); }
 
 /* ---------- Tab bar fluttuante con lente ---------- */
@@ -362,7 +363,7 @@ nav.liquid-glass-nav:has(#tab-spesa.active) .lens { transform: translateX(100%);
 .input-center { text-align: center; }
 .modal-sep { border-top: 0.5px solid var(--lo); margin-top: 4px; padding-top: 10px; }
 .qty-btn.danger { color: var(--tint-red); margin-left: 2px; }
-.spesa-main { display: flex; align-items: center; flex: 1; min-width: 0; }
+.spesa-main { display: grid; grid-template-columns: auto 1fr; column-gap: 12px; align-items: center; flex: 1; min-width: 0; }
 .spesa-chevron { color: var(--text-muted); padding-left: 6px; }
 
 /* ---------- Modale Nuovo prodotto ---------- */
