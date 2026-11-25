@@ -22,29 +22,40 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Icone: @stratakit/icons (MIT, © Bentley Systems) -->
+  <svg class="sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+    <symbol id="i-home" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M19.817 9.586a.5.5 0 0 1 .183.386V19.5a.5.5 0 0 1-.5.5H15v-5.5a1.5 1.5 0 0 0-1.5-1.5h-3A1.5 1.5 0 0 0 9 14.5V20H4.5a.5.5 0 0 1-.5-.5V9.972a.5.5 0 0 1 .183-.386l7.5-6.177a.5.5 0 0 1 .634 0l7.5 6.177ZM10 20h4v-5.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5V20Zm9.5 1a1.5 1.5 0 0 0 1.5-1.5V9.972a1.5 1.5 0 0 0-.547-1.158l-7.5-6.176a1.5 1.5 0 0 0-1.906 0l-7.5 6.176A1.5 1.5 0 0 0 3 9.972V19.5A1.5 1.5 0 0 0 4.5 21h15Z" clip-rule="evenodd"/></symbol>
+    <symbol id="i-cart" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M4.166 3.163A1.5 1.5 0 0 0 2.704 2H1.5a.5.5 0 0 0 0 1h1.204a.5.5 0 0 1 .487.388l.514 2.224 2.129 9.225A1.5 1.5 0 0 0 7.296 16H18.68a1.5 1.5 0 0 0 1.47-1.206l1.6-8A1.5 1.5 0 0 0 20.281 5H4.59l-.424-1.837ZM7.296 15a.5.5 0 0 1-.487-.388L4.82 6h15.46a.5.5 0 0 1 .49.598l-1.6 8a.5.5 0 0 1-.49.402H7.296ZM10 19a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm1 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm7 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm1 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z" clip-rule="evenodd"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path fill="currentColor" d="M14.639 1.154a.5.5 0 0 1 .851.444l-1.42 7.097 5.622 2.343a.5.5 0 0 1 .17.808l-10.5 11a.5.5 0 0 1-.852-.444l1.419-7.098-5.621-2.342a.5.5 0 0 1-.17-.808l10.5-11ZM5.364 12.317l5.328 2.221a.5.5 0 0 1 .298.56l-1.162 5.81 8.807-9.226-5.327-2.22a.5.5 0 0 1-.298-.56l1.162-5.81-8.808 9.225Z"/></symbol>
+    <symbol id="i-delete" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M14.5 3a.5.5 0 0 1 .5.5V5H9V3.5a.5.5 0 0 1 .5-.5h5ZM8 5V3.5A1.5 1.5 0 0 1 9.5 2h5A1.5 1.5 0 0 1 16 3.5V5h5.5a.5.5 0 0 1 0 1h-1.53l-.912 14.594A1.5 1.5 0 0 1 17.56 22H6.439a1.5 1.5 0 0 1-1.497-1.406L4.03 6H2.5a.5.5 0 0 1 0-1H8ZM5.032 6h13.936l-.908 14.531a.5.5 0 0 1-.5.469H6.44a.5.5 0 0 1-.5-.469L5.032 6ZM16.5 8.525a.5.5 0 0 0-.998-.05l-.5 10a.5.5 0 0 0 .998.05l.5-10Zm-5 9.975v-10a.5.5 0 0 1 1 0v10a.5.5 0 0 1-1 0ZM8.499 8.475a.5.5 0 0 0-.998.05l.5 10a.5.5 0 0 0 .998-.05l-.5-10Z" clip-rule="evenodd"/></symbol>
+    <symbol id="i-add" viewBox="0 0 24 24"><path fill="currentColor" d="M11.5 18v-5.5H6a.5.5 0 0 1 0-1h5.5V6a.5.5 0 0 1 1 0v5.5H18a.5.5 0 0 1 0 1h-5.5V18a.5.5 0 0 1-1 0Z"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M18 4a2 2 0 1 1 0 4 2 2 0 0 1 0-4Zm0 5a3 3 0 1 0-2.87-2.124L8.422 10.23a3 3 0 1 0 0 3.54l6.708 3.354a3 3 0 1 0 .448-.894L8.87 12.876a3 3 0 0 0 0-1.752l6.708-3.354A2.996 2.996 0 0 0 18 9Zm0 7a2 2 0 1 1 0 4 2 2 0 0 1 0-4ZM6 10a2 2 0 1 1 0 4 2 2 0 0 1 0-4Z" clip-rule="evenodd"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path fill="currentColor" d="M14.646 3.646a.5.5 0 1 1 .707.708L7.708 12l7.647 7.646a.5.5 0 1 1-.707.707l-8-8a.5.5 0 0 1 0-.707l8-8Z"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path fill="currentColor" d="M13 2a1 1 0 0 1 .895.553l.832 1.666.846.35 1.768-.589.136-.035a1 1 0 0 1 .887.277l1.414 1.414a1 1 0 0 1 .242 1.023l-.59 1.767.35.845 1.667.834A1 1 0 0 1 22 11v2a1 1 0 0 1-.553.895l-1.667.832-.35.846.59 1.768a1 1 0 0 1-.242 1.023l-1.414 1.414a1 1 0 0 1-1.023.242l-1.768-.59-.846.35-.832 1.667A1 1 0 0 1 13 22h-2a1 1 0 0 1-.895-.553l-.834-1.667-.845-.35-1.767.59a1 1 0 0 1-1.023-.242l-1.414-1.414a1 1 0 0 1-.242-1.023l.59-1.768-.351-.846-1.666-.832A1 1 0 0 1 2 13v-2a1 1 0 0 1 .553-.895l1.666-.834.35-.845-.589-1.767a1 1 0 0 1 .242-1.023l1.414-1.414.106-.092a1 1 0 0 1 .917-.15l1.767.59.845-.351.834-1.666.072-.121A1 1 0 0 1 11 2h2Zm-3 3-1.535.636-2.122-.707-1.414 1.414.707 2.122L5 10l-2 1v2l2 1 .636 1.535-.707 2.122 1.414 1.414 2.122-.707L10 19l1 2h2l1-2 1.535-.636 2.122.707 1.414-1.414-.707-2.122L19 14l2-1v-2l-2-1-.636-1.535.707-2.122-1.414-1.414-2.122.707L14 5l-1-2h-2l-1 2Zm2 3a4 4 0 1 1 0 8 4 4 0 0 1 0-8Zm0 1a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path fill="currentColor" d="M1 14a6.002 6.002 0 0 1 4.6-5.836 7 7 0 0 1 13.34 1.932 5 5 0 0 1-.7 9.901l-.257.006L7 20a6 6 0 0 1-6-6Zm1 0a5 5 0 0 0 5 5l10.983.003.206-.005a4 4 0 0 0 .425-7.945l-.185-.026-.088-.017a.5.5 0 0 1-.357-.444l.5-.035-.5.035a6 6 0 0 0-11.56-1.783l-.027.057a.5.5 0 0 1-.342.249l-.215.047A5.002 5.002 0 0 0 2 14Z"/></symbol>
+    <symbol id="i-add-s" viewBox="0 0 16 16"><path fill="currentColor" d="M7.5 12.5v-4h-4a.5.5 0 0 1 0-1h4v-4a.5.5 0 0 1 1 0v4h4a.5.5 0 0 1 0 1h-4v4a.5.5 0 0 1-1 0Z"/></symbol>
+    <symbol id="i-minus-s" viewBox="0 0 16 16"><path fill="currentColor" d="M12.5 7.5a.5.5 0 0 1 0 1h-9a.5.5 0 0 1 0-1h9Z"/></symbol>
+    <symbol id="i-dismiss-s" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 1 0 .708.707L8 8.707l3.146 3.146a.5.5 0 1 0 .707-.707L8.707 8l3.146-3.146a.5.5 0 1 0-.707-.708L8 7.293 4.854 4.146Z" clip-rule="evenodd"/></symbol>
+    <symbol id="i-checkmark-s" viewBox="0 0 16 16"><path fill="currentColor" d="M11.607 4.191a.5.5 0 0 1 .787.617l-5.5 7a.503.503 0 0 1-.777.012l-2.5-3-.057-.084a.5.5 0 0 1 .752-.627l.072.07 2.105 2.526 5.118-6.514Z"/></symbol>
+    <symbol id="i-chevron-left-s" viewBox="0 0 16 16"><path fill="currentColor" d="M9.146 4.146a.5.5 0 1 1 .708.708L6.707 8l3.147 3.146a.5.5 0 1 1-.708.707l-3.5-3.5a.5.5 0 0 1 0-.707l3.5-3.5Z"/></symbol>
+  </svg>
+
 
   <!-- Header con scroll-edge effect -->
   <header>
     <div class="header-left">
       <button id="btn-header-back" class="btn-circle-glass" hidden onclick="showHome()" aria-label="Torna indietro">
-        <svg class="chevron-back" viewBox="0 0 24 24">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
+        <svg aria-hidden="true"><use href="#i-chevron-left"/></svg>
       </button>
       <button id="btn-header-sync" class="btn-circle-glass" onclick="openSyncModal()" aria-label="Condivisione Casa">
-        <svg viewBox="0 0 24 24">
-          <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
-        </svg>
+        <svg aria-hidden="true"><use href="#i-cloud"/></svg>
         <span class="sync-indicator" id="sync-dot"></span>
       </button>
     </div>
     <h1 id="header-title">Casa & Scorte</h1>
     <div class="header-right">
       <button id="btn-header-settings" class="btn-circle-glass" hidden onclick="openCategorySettingsModal()" aria-label="Impostazioni Categoria">
-        <svg viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="3"></circle>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83-2.83l.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-        </svg>
+        <svg aria-hidden="true"><use href="#i-settings"/></svg>
       </button>
     </div>
   </header>
@@ -77,17 +88,17 @@
     <div id="view-spesa" class="view">
       <div class="spesa-controls">
         <button class="btn-secondary" onclick="autoPopulateSpesa()">
-          <svg class="ico" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg> Carica esauriti
+          <svg class="ico" aria-hidden="true"><use href="#i-bolt"/></svg> Carica esauriti
         </button>
         <button class="btn-secondary danger" onclick="clearPurchasedSpesa()">
-          <svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg> Rimuovi fatti
+          <svg class="ico" aria-hidden="true"><use href="#i-delete"/></svg> Rimuovi fatti
         </button>
       </div>
 
       <div class="add-form-card">
         <div class="form-row">
           <input type="text" id="input-spesa-manual" class="input-name" placeholder="Aggiungi alla lista spesa..." autocomplete="off">
-          <button class="btn-add btn-plus" aria-label="Aggiungi" onclick="addManualSpesa()">+</button>
+          <button class="btn-add btn-plus" aria-label="Aggiungi" onclick="addManualSpesa()"><svg class="ico" aria-hidden="true"><use href="#i-add"/></svg></button>
         </div>
       </div>
 
@@ -102,14 +113,14 @@
   <!-- Benvenuto / primo accesso: crea o collega una casa -->
   <div class="welcome" id="welcome" role="dialog" aria-modal="true" aria-labelledby="welcome-title" hidden>
     <div class="welcome-card">
-      <div class="welcome-icon" aria-hidden="true">🏠</div>
+      <div class="welcome-icon" aria-hidden="true"><svg><use href="#i-home"/></svg></div>
 
       <section class="welcome-step" id="welcome-create">
         <h2 id="welcome-title">Crea la tua casa</h2>
         <p class="welcome-sub">Dai un nome alla casa: avrai subito una lista condivisibile con chi vuoi.</p>
         <div class="modal-field">
           <label class="modal-label" for="input-house-name">Nome della casa</label>
-          <input type="text" id="input-house-name" placeholder="es. Casa Rossi" maxlength="40" autocomplete="off">
+          <input type="text" id="input-house-name" class="input-caps" placeholder="es. CASA ROSSI" maxlength="40" autocomplete="off" autocapitalize="characters">
         </div>
         <p class="form-error" id="welcome-create-error" role="alert" hidden></p>
         <button class="btn-add" id="btn-create-house" onclick="createHouse()">Crea casa</button>
@@ -145,7 +156,7 @@
             <button class="chip-btn" onclick="startRenameHouse()">Rinomina</button>
           </div>
           <div class="house-name-row" id="house-name-edit" hidden>
-            <input type="text" id="input-rename-house" maxlength="40" autocomplete="off" aria-label="Nome della casa">
+            <input type="text" id="input-rename-house" class="input-caps" maxlength="40" autocomplete="off" autocapitalize="characters" aria-label="Nome della casa">
             <button class="chip-btn primary" onclick="saveHouseName()">Salva</button>
           </div>
           <div class="status-line"><span class="status-dot" id="sync-status-dot"></span><span id="sync-status-text"></span></div>
@@ -155,7 +166,7 @@
           <div class="code-box" id="sync-code"></div>
         </div>
         <p class="modal-note">Chi inserisce questo codice su un altro dispositivo vede la stessa lista in tempo reale.</p>
-        <button class="btn-add" id="btn-share-code" onclick="shareHouseCode()">Condividi codice</button>
+        <button class="btn-add" id="btn-share-code" onclick="shareHouseCode()"><svg class="ico" aria-hidden="true"><use href="#i-share"/></svg><span id="btn-share-label">Condividi codice</span></button>
         <div class="modal-actions">
           <button class="btn-modal btn-modal-cancel" onclick="leaveHouse('join')">Altra lista</button>
           <button class="btn-modal btn-modal-delete" onclick="leaveHouse('create')">Disconnetti</button>
@@ -190,7 +201,7 @@
       </div>
       <div class="modal-sep">
         <button class="btn-modal btn-modal-delete" onclick="deleteCurrentCategory()">
-          <svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg> Elimina categoria
+          <svg class="ico" aria-hidden="true"><use href="#i-delete"/></svg> Elimina categoria
         </button>
       </div>
     </div>
@@ -257,16 +268,16 @@
   <nav class="liquid-glass-nav">
     <span class="lens" aria-hidden="true"></span>
     <button class="nav-tab active" id="tab-home" onclick="switchToTab('home')">
-      <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      <svg aria-hidden="true"><use href="#i-home"/></svg>
       Scorte
     </button>
     <button class="nav-tab" id="tab-spesa" onclick="switchToTab('spesa')">
-      <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+      <svg aria-hidden="true"><use href="#i-cart"/></svg>
       Lista Spesa
       <span class="badge" id="spesa-badge" hidden>0</span>
     </button>
   </nav>
-  <button class="dock-add" onclick="openNewItemModal()" aria-label="Nuovo prodotto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button class="dock-add" onclick="openNewItemModal()" aria-label="Nuovo prodotto"><svg aria-hidden="true"><use href="#i-add"/></svg></button>
   </div>
 
   <script src="app.js" defer></script>
