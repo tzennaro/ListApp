@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dispensa-pwa-v12';
+const CACHE_NAME = 'dispensa-pwa-v13';
 const STATIC_ASSETS = [
   './',
   './index.html',
