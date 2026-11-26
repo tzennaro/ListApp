@@ -652,13 +652,15 @@ function renderCategoryItems() {
     div.innerHTML = `
       <div class="item-info">
         <span class="item-name">${escapeHtml(item.name)}</span>
-        <span class="item-status ${statusClass}">${statusText}</span>
+        <span class="item-status ${statusClass}" role="img" aria-label="${statusText}" title="${statusText}"></span>
       </div>
       <div class="item-actions">
         <button class="btn-quick-spesa" title="Aggiungi a spesa" aria-label="Aggiungi alla spesa" onclick="addSingleToSpesa('${escapeHtml(item.name)}', '${currentCategory}')"><svg class="ico" aria-hidden="true"><use href="#i-cart"/></svg></button>
+        <div class="qty-group">
         <button class="qty-btn" aria-label="Diminuisci" onclick="updateQty('${item.id}', -1)"><svg class="ico" aria-hidden="true"><use href="#i-minus-s"/></svg></button>
         <span class="qty-value">${item.qty}</span>
         <button class="qty-btn" aria-label="Aumenta" onclick="updateQty('${item.id}', 1)"><svg class="ico" aria-hidden="true"><use href="#i-add-s"/></svg></button>
+        </div>
         <button class="qty-btn danger" aria-label="Elimina articolo" onclick="deleteItem('${item.id}')"><svg class="ico" aria-hidden="true"><use href="#i-dismiss-s"/></svg></button>
       </div>
     `;
